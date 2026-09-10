@@ -81,3 +81,11 @@ The system follows a multi-model architecture combined with a Decision Engine.
                   | Final Health  |
                   | Assessment    |
                   +---------------+
+
+    # ========================================================
+    # TRUSK WORTHY
+    # ========================================================
+    from trustworthy_ai.trustworthy_ai_dashboard import render_trustworthy_ai_dashboard
+    render_trustworthy_ai_dashboard(PROJECT_ROOT)
+
+

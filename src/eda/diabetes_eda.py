@@ -10,525 +10,525 @@ diabetes = pd.read_csv("../../data/processed/diabetes_clean.csv")
 
 print("Shape:", diabetes.shape)
 
-# # ==========================================
-# # 2. TARGET DISTRIBUTION
-# # ==========================================
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - TARGET DISTRIBUTION")
-# print("=" * 60)
-#
-# print(diabetes["Outcome"].value_counts())
-#
-# print("\nPercentage:")
-# print(
-#     diabetes["Outcome"]
-#     .value_counts(normalize=True)
-#     .mul(100)
-#     .round(2)
-# )
-#
-# # ==========================================
-# # 3. VISUALIZE TARGET
-# # ==========================================
-#
-# diabetes["Outcome"].value_counts().plot(
-#     kind="bar"
-# )
-#
-# plt.title("Diabetes Outcome Distribution")
-# plt.xlabel("Outcome")
-# plt.ylabel("Number of Patients")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# output_path = "../../data/processed/diabetes_clean.csv"
-# diabetes.to_csv(output_path, index=False)
-#
-# print("\nSaved cleaned data to:")
-# print(output_path)
-#
-# # ==========================================
-# # 4. GLUCOSE VS DIABETES
-# # ==========================================
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - GLUCOSE ANALYSIS")
-# print("=" * 60)
-#
-# print("\nGlucose statistics by Outcome:")
-#
-# print(
-#     diabetes.groupby("Outcome")["Glucose"]
-#     .agg(["count", "mean", "median", "min", "max", "std"])
-# )
-#
-# # ==========================================
-# # 5. VISUALIZATION
-# # ==========================================
-#
-# plt.figure(figsize=(8, 5))
-#
-# diabetes.boxplot(
-#     column="Glucose",
-#     by="Outcome"
-# )
-#
-# plt.title("Glucose Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Glucose")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# # ==========================================
-# # 6. BMI VS DIABETES
-# # ==========================================
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - BMI ANALYSIS")
-# print("=" * 60)
-#
-# print("\nBMI statistics by Outcome:")
-#
-# print(
-#     diabetes.groupby("Outcome")["BMI"]
-#     .agg(["count", "mean", "median", "min", "max", "std"])
-# )
-#
-# # ==========================================
-# # 7. BMI BOXPLOT
-# # ==========================================
-#
-# plt.figure(figsize=(8, 5))
-#
-# diabetes.boxplot(
-#     column="BMI",
-#     by="Outcome"
-# )
-#
-# plt.title("BMI Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("BMI")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# # ==========================================
-# # 8. AGE VS DIABETES
-# # ==========================================
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - AGE ANALYSIS")
-# print("=" * 60)
-#
-# print("\nAge statistics by Outcome:")
-#
-# print(
-#     diabetes.groupby("Outcome")["Age"]
-#     .agg(["count", "mean", "median", "min", "max", "std"])
-# )
-#
-# # ==========================================
-# # 9. AGE BOXPLOT
-# # ==========================================
-#
-# plt.figure(figsize=(8, 5))
-#
-# diabetes.boxplot(
-#     column="Age",
-#     by="Outcome"
-# )
-#
-# plt.title("Age Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Age")
-#
-# plt.tight_layout()
-# plt.show()
-#
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - PREGNANCIES ANALYSIS")
-# print("=" * 60)
-#
-# preg_stats = diabetes.groupby("Outcome")["Pregnancies"].agg(
-#     ["count", "mean", "median", "min", "max", "std"]
-# )
-#
-# print(preg_stats)
-# plt.figure(figsize=(8, 6))
-#
-# diabetes.boxplot(
-#     column="Pregnancies",
-#     by="Outcome"
-# )
-#
-# plt.title("Pregnancies Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Pregnancies")
-#
-# plt.show()
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - BLOOD PRESSURE ANALYSIS")
-# print("=" * 60)
-#
-# bp_stats = diabetes.groupby("Outcome")["BloodPressure"].agg(
-#     ["count", "mean", "median", "min", "max", "std"]
-# )
-#
-# print(bp_stats)
-# plt.figure(figsize=(8, 6))
-#
-# diabetes.boxplot(
-#     column="BloodPressure",
-#     by="Outcome"
-# )
-#
-# plt.title("Blood Pressure Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Blood Pressure")
-#
-# plt.show()
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - INSULIN ANALYSIS")
-# print("=" * 60)
-#
-# insulin_stats = diabetes.groupby("Outcome")["Insulin"].agg(
-#     ["count", "mean", "median", "min", "max", "std"]
-# )
-#
-# print(insulin_stats)
-# plt.figure(figsize=(8, 6))
-#
-# diabetes.boxplot(
-#     column="Insulin",
-#     by="Outcome"
-# )
-#
-# plt.title("Insulin Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Insulin")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - PEDIGREE FUNCTION ANALYSIS")
-# print("=" * 60)
-#
-# print(
-#     diabetes.groupby("Outcome")["DiabetesPedigreeFunction"]
-#     .agg(["count", "mean", "median", "min", "max", "std"])
-# )
-#
-# plt.figure(figsize=(8, 6))
-#
-# diabetes.boxplot(
-#     column="DiabetesPedigreeFunction",
-#     by="Outcome"
-# )
-#
-# plt.title("Diabetes Pedigree Function Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Diabetes Pedigree Function")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - SKIN THICKNESS ANALYSIS")
-# print("=" * 60)
-#
-# print(
-#     diabetes.groupby("Outcome")["SkinThickness"]
-#     .agg(["count", "mean", "median", "min", "max", "std"])
-# )
-#
-# plt.figure(figsize=(8, 6))
-#
-# diabetes.boxplot(
-#     column="SkinThickness",
-#     by="Outcome"
-# )
-#
-# plt.title("Skin Thickness Distribution by Diabetes Outcome")
-# plt.suptitle("")
-# plt.xlabel("Outcome")
-# plt.ylabel("Skin Thickness")
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - FEATURE CORRELATION HEATMAP")
-# print("=" * 60)
-#
-# correlation = diabetes.drop(columns=["Outcome"]).corr()
-#
-# print(correlation.round(3))
-#
-# plt.figure(figsize=(10, 8))
-#
-# plt.imshow(correlation, cmap="coolwarm", aspect="auto")
-#
-# plt.colorbar(label="Correlation")
-#
-# plt.xticks(
-#     range(len(correlation.columns)),
-#     correlation.columns,
-#     rotation=45,
-#     ha="right"
-# )
-#
-# plt.yticks(
-#     range(len(correlation.columns)),
-#     correlation.columns
-# )
-#
-# plt.title("Diabetes Feature Correlation")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - GLUCOSE vs BMI")
-# print("=" * 60)
-#
-# plt.figure(figsize=(8, 6))
-#
-# for outcome in [0, 1]:
-#
-#     subset = diabetes[diabetes["Outcome"] == outcome]
-#
-#     plt.scatter(
-#         subset["Glucose"],
-#         subset["BMI"],
-#         label=f"Outcome {outcome}",
-#         alpha=0.5
-#     )
-#
-# plt.xlabel("Glucose")
-# plt.ylabel("BMI")
-# plt.title("Glucose vs BMI by Diabetes Outcome")
-# plt.legend()
-#
-# plt.tight_layout()
-# plt.show()
-#
-# plt.tight_layout()
-# plt.show()
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - FEATURE MEAN DIFFERENCE")
-# print("=" * 60)
-#
-# features = [
-#     "Pregnancies",
-#     "Glucose",
-#     "BloodPressure",
-#     "SkinThickness",
-#     "Insulin",
-#     "BMI",
-#     "DiabetesPedigreeFunction",
-#     "Age"
-# ]
-#
-# for feature in features:
-#
-#     mean_0 = diabetes.loc[
-#         diabetes["Outcome"] == 0, feature
-#     ].mean()
-#
-#     mean_1 = diabetes.loc[
-#         diabetes["Outcome"] == 1, feature
-#     ].mean()
-#
-#     difference = mean_1 - mean_0
-#
-#     print(
-#         f"{feature:30s}"
-#         f"Outcome 0 = {mean_0:8.2f} | "
-#         f"Outcome 1 = {mean_1:8.2f} | "
-#         f"Difference = {difference:8.2f}"
-#     )
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - STANDARDIZED MEAN DIFFERENCE")
-# print("=" * 60)
-#
-# for feature in features:
-#
-#     group_0 = diabetes.loc[
-#         diabetes["Outcome"] == 0, feature
-#     ]
-#
-#     group_1 = diabetes.loc[
-#         diabetes["Outcome"] == 1, feature
-#     ]
-#
-#     mean_0 = group_0.mean()
-#     mean_1 = group_1.mean()
-#
-#     std_0 = group_0.std()
-#     std_1 = group_1.std()
-#
-#     pooled_std = np.sqrt(
-#         (std_0 ** 2 + std_1 ** 2) / 2
-#     )
-#
-#     effect_size = (mean_1 - mean_0) / pooled_std
-#
-#     print(
-#         f"{feature:30s}"
-#         f"Effect Size = {effect_size:.3f}"
-#     )
-#
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - OUTCOME RATE BY GLUCOSE")
-# print("=" * 60)
-#
-# glucose_bins = [0, 100, 125, 140, 160, 200]
-#
-# diabetes["GlucoseGroup"] = pd.cut(
-#     diabetes["Glucose"],
-#     bins=glucose_bins
-# )
-#
-# glucose_risk = diabetes.groupby(
-#     "GlucoseGroup",
-#     observed=True
-# )["Outcome"].mean()
-#
-# print(glucose_risk)
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - OUTCOME RATE BY BMI")
-# print("=" * 60)
-#
-# bmi_bins = [0, 18.5, 25, 30, 35, 40, 100]
-#
-# diabetes["BMIGroup"] = pd.cut(
-#     diabetes["BMI"],
-#     bins=bmi_bins
-# )
-#
-# bmi_risk = diabetes.groupby(
-#     "BMIGroup",
-#     observed=True
-# )["Outcome"].mean()
-#
-# print(bmi_risk)
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - OUTCOME RATE BY AGE")
-# print("=" * 60)
-#
-# age_bins = [0, 25, 35, 45, 55, 65, 100]
-#
-# diabetes["AgeGroup"] = pd.cut(
-#     diabetes["Age"],
-#     bins=age_bins
-# )
-#
-# age_risk = diabetes.groupby(
-#     "AgeGroup",
-#     observed=True
-# )["Outcome"].mean()
-#
-# print(age_risk)
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - GROUP SAMPLE SIZE")
-# print("=" * 60)
-#
-# print("\nGlucose groups:")
-# print(diabetes["GlucoseGroup"].value_counts().sort_index())
-#
-# print("\nBMI groups:")
-# print(diabetes["BMIGroup"].value_counts().sort_index())
-#
-# print("\nAge groups:")
-# print(diabetes["AgeGroup"].value_counts().sort_index())
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - PREGNANCIES RISK ANALYSIS")
-# print("=" * 60)
-#
-# pregnancy_bins = [-1, 0, 2, 5, 10, 20]
-#
-# diabetes["PregnancyGroup"] = pd.cut(
-#     diabetes["Pregnancies"],
-#     bins=pregnancy_bins
-# )
-#
-# pregnancy_risk = diabetes.groupby(
-#     "PregnancyGroup",
-#     observed=True
-# )["Outcome"].mean()
-#
-# print(pregnancy_risk)
-#
-# print("\n" + "=" * 60)
-# print("DIABETES - FEATURE IMPORTANCE BY CORRELATION")
-# print("=" * 60)
-#
-# # Chỉ lấy các feature dạng số
-# numeric_features = diabetes.select_dtypes(include=np.number)
-#
-# # Bỏ target
-# numeric_features = numeric_features.drop(
-#     columns=["Outcome"],
-#     errors="ignore"
-# )
-#
-# correlation = (
-#     numeric_features
-#     .corrwith(diabetes["Outcome"])
-#     .abs()
-#     .sort_values(ascending=False)
-# )
-#
-# print(correlation)
-#
-#
-# features = [
-#     "Glucose",
-#     "BMI",
-#     "Age",
-#     "Insulin",
-#     "Pregnancies"
-# ]
-#
-# for feature in features:
-#
-#     plt.figure(figsize=(8, 5))
-#
-#     diabetes[diabetes["Outcome"] == 0][feature].hist(
-#         alpha=0.5,
-#         label="No Diabetes"
-#     )
-#
-#     diabetes[diabetes["Outcome"] == 1][feature].hist(
-#         alpha=0.5,
-#         label="Diabetes"
-#     )
-#
-#     plt.xlabel(feature)
-#     plt.ylabel("Frequency")
-#     plt.title(f"{feature} Distribution by Diabetes Outcome")
-#     plt.legend()
-#     plt.tight_layout()
-#
-#     plt.show()
+# ==========================================
+# 2. TARGET DISTRIBUTION
+# ==========================================
+
+print("\n" + "=" * 60)
+print("DIABETES - TARGET DISTRIBUTION")
+print("=" * 60)
+
+print(diabetes["Outcome"].value_counts())
+
+print("\nPercentage:")
+print(
+    diabetes["Outcome"]
+    .value_counts(normalize=True)
+    .mul(100)
+    .round(2)
+)
+
+# ==========================================
+# 3. VISUALIZE TARGET
+# ==========================================
+
+diabetes["Outcome"].value_counts().plot(
+    kind="bar"
+)
+
+plt.title("Diabetes Outcome Distribution")
+plt.xlabel("Outcome")
+plt.ylabel("Number of Patients")
+
+plt.tight_layout()
+plt.show()
+
+output_path = "../../data/processed/diabetes_clean.csv"
+diabetes.to_csv(output_path, index=False)
+
+print("\nSaved cleaned data to:")
+print(output_path)
+
+# ==========================================
+# 4. GLUCOSE VS DIABETES
+# ==========================================
+
+print("\n" + "=" * 60)
+print("DIABETES - GLUCOSE ANALYSIS")
+print("=" * 60)
+
+print("\nGlucose statistics by Outcome:")
+
+print(
+    diabetes.groupby("Outcome")["Glucose"]
+    .agg(["count", "mean", "median", "min", "max", "std"])
+)
+
+# ==========================================
+# 5. VISUALIZATION
+# ==========================================
+
+plt.figure(figsize=(8, 5))
+
+diabetes.boxplot(
+    column="Glucose",
+    by="Outcome"
+)
+
+plt.title("Glucose Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Glucose")
+
+plt.tight_layout()
+plt.show()
+
+# ==========================================
+# 6. BMI VS DIABETES
+# ==========================================
+
+print("\n" + "=" * 60)
+print("DIABETES - BMI ANALYSIS")
+print("=" * 60)
+
+print("\nBMI statistics by Outcome:")
+
+print(
+    diabetes.groupby("Outcome")["BMI"]
+    .agg(["count", "mean", "median", "min", "max", "std"])
+)
+
+# ==========================================
+# 7. BMI BOXPLOT
+# ==========================================
+
+plt.figure(figsize=(8, 5))
+
+diabetes.boxplot(
+    column="BMI",
+    by="Outcome"
+)
+
+plt.title("BMI Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("BMI")
+
+plt.tight_layout()
+plt.show()
+
+# ==========================================
+# 8. AGE VS DIABETES
+# ==========================================
+
+print("\n" + "=" * 60)
+print("DIABETES - AGE ANALYSIS")
+print("=" * 60)
+
+print("\nAge statistics by Outcome:")
+
+print(
+    diabetes.groupby("Outcome")["Age"]
+    .agg(["count", "mean", "median", "min", "max", "std"])
+)
+
+# ==========================================
+# 9. AGE BOXPLOT
+# ==========================================
+
+plt.figure(figsize=(8, 5))
+
+diabetes.boxplot(
+    column="Age",
+    by="Outcome"
+)
+
+plt.title("Age Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Age")
+
+plt.tight_layout()
+plt.show()
+
+
+print("\n" + "=" * 60)
+print("DIABETES - PREGNANCIES ANALYSIS")
+print("=" * 60)
+
+preg_stats = diabetes.groupby("Outcome")["Pregnancies"].agg(
+    ["count", "mean", "median", "min", "max", "std"]
+)
+
+print(preg_stats)
+plt.figure(figsize=(8, 6))
+
+diabetes.boxplot(
+    column="Pregnancies",
+    by="Outcome"
+)
+
+plt.title("Pregnancies Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Pregnancies")
+
+plt.show()
+
+print("\n" + "=" * 60)
+print("DIABETES - BLOOD PRESSURE ANALYSIS")
+print("=" * 60)
+
+bp_stats = diabetes.groupby("Outcome")["BloodPressure"].agg(
+    ["count", "mean", "median", "min", "max", "std"]
+)
+
+print(bp_stats)
+plt.figure(figsize=(8, 6))
+
+diabetes.boxplot(
+    column="BloodPressure",
+    by="Outcome"
+)
+
+plt.title("Blood Pressure Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Blood Pressure")
+
+plt.show()
+
+print("\n" + "=" * 60)
+print("DIABETES - INSULIN ANALYSIS")
+print("=" * 60)
+
+insulin_stats = diabetes.groupby("Outcome")["Insulin"].agg(
+    ["count", "mean", "median", "min", "max", "std"]
+)
+
+print(insulin_stats)
+plt.figure(figsize=(8, 6))
+
+diabetes.boxplot(
+    column="Insulin",
+    by="Outcome"
+)
+
+plt.title("Insulin Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Insulin")
+
+plt.tight_layout()
+plt.show()
+
+print("\n" + "=" * 60)
+print("DIABETES - PEDIGREE FUNCTION ANALYSIS")
+print("=" * 60)
+
+print(
+    diabetes.groupby("Outcome")["DiabetesPedigreeFunction"]
+    .agg(["count", "mean", "median", "min", "max", "std"])
+)
+
+plt.figure(figsize=(8, 6))
+
+diabetes.boxplot(
+    column="DiabetesPedigreeFunction",
+    by="Outcome"
+)
+
+plt.title("Diabetes Pedigree Function Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Diabetes Pedigree Function")
+
+plt.tight_layout()
+plt.show()
+
+print("\n" + "=" * 60)
+print("DIABETES - SKIN THICKNESS ANALYSIS")
+print("=" * 60)
+
+print(
+    diabetes.groupby("Outcome")["SkinThickness"]
+    .agg(["count", "mean", "median", "min", "max", "std"])
+)
+
+plt.figure(figsize=(8, 6))
+
+diabetes.boxplot(
+    column="SkinThickness",
+    by="Outcome"
+)
+
+plt.title("Skin Thickness Distribution by Diabetes Outcome")
+plt.suptitle("")
+plt.xlabel("Outcome")
+plt.ylabel("Skin Thickness")
+
+print("\n" + "=" * 60)
+print("DIABETES - FEATURE CORRELATION HEATMAP")
+print("=" * 60)
+
+correlation = diabetes.drop(columns=["Outcome"]).corr()
+
+print(correlation.round(3))
+
+plt.figure(figsize=(10, 8))
+
+plt.imshow(correlation, cmap="coolwarm", aspect="auto")
+
+plt.colorbar(label="Correlation")
+
+plt.xticks(
+    range(len(correlation.columns)),
+    correlation.columns,
+    rotation=45,
+    ha="right"
+)
+
+plt.yticks(
+    range(len(correlation.columns)),
+    correlation.columns
+)
+
+plt.title("Diabetes Feature Correlation")
+
+plt.tight_layout()
+plt.show()
+
+print("\n" + "=" * 60)
+print("DIABETES - GLUCOSE vs BMI")
+print("=" * 60)
+
+plt.figure(figsize=(8, 6))
+
+for outcome in [0, 1]:
+
+    subset = diabetes[diabetes["Outcome"] == outcome]
+
+    plt.scatter(
+        subset["Glucose"],
+        subset["BMI"],
+        label=f"Outcome {outcome}",
+        alpha=0.5
+    )
+
+plt.xlabel("Glucose")
+plt.ylabel("BMI")
+plt.title("Glucose vs BMI by Diabetes Outcome")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+plt.tight_layout()
+plt.show()
+
+print("\n" + "=" * 60)
+print("DIABETES - FEATURE MEAN DIFFERENCE")
+print("=" * 60)
+
+features = [
+    "Pregnancies",
+    "Glucose",
+    "BloodPressure",
+    "SkinThickness",
+    "Insulin",
+    "BMI",
+    "DiabetesPedigreeFunction",
+    "Age"
+]
+
+for feature in features:
+
+    mean_0 = diabetes.loc[
+        diabetes["Outcome"] == 0, feature
+    ].mean()
+
+    mean_1 = diabetes.loc[
+        diabetes["Outcome"] == 1, feature
+    ].mean()
+
+    difference = mean_1 - mean_0
+
+    print(
+        f"{feature:30s}"
+        f"Outcome 0 = {mean_0:8.2f} | "
+        f"Outcome 1 = {mean_1:8.2f} | "
+        f"Difference = {difference:8.2f}"
+    )
+
+print("\n" + "=" * 60)
+print("DIABETES - STANDARDIZED MEAN DIFFERENCE")
+print("=" * 60)
+
+for feature in features:
+
+    group_0 = diabetes.loc[
+        diabetes["Outcome"] == 0, feature
+    ]
+
+    group_1 = diabetes.loc[
+        diabetes["Outcome"] == 1, feature
+    ]
+
+    mean_0 = group_0.mean()
+    mean_1 = group_1.mean()
+
+    std_0 = group_0.std()
+    std_1 = group_1.std()
+
+    pooled_std = np.sqrt(
+        (std_0 ** 2 + std_1 ** 2) / 2
+    )
+
+    effect_size = (mean_1 - mean_0) / pooled_std
+
+    print(
+        f"{feature:30s}"
+        f"Effect Size = {effect_size:.3f}"
+    )
+
+
+print("\n" + "=" * 60)
+print("DIABETES - OUTCOME RATE BY GLUCOSE")
+print("=" * 60)
+
+glucose_bins = [0, 100, 125, 140, 160, 200]
+
+diabetes["GlucoseGroup"] = pd.cut(
+    diabetes["Glucose"],
+    bins=glucose_bins
+)
+
+glucose_risk = diabetes.groupby(
+    "GlucoseGroup",
+    observed=True
+)["Outcome"].mean()
+
+print(glucose_risk)
+
+print("\n" + "=" * 60)
+print("DIABETES - OUTCOME RATE BY BMI")
+print("=" * 60)
+
+bmi_bins = [0, 18.5, 25, 30, 35, 40, 100]
+
+diabetes["BMIGroup"] = pd.cut(
+    diabetes["BMI"],
+    bins=bmi_bins
+)
+
+bmi_risk = diabetes.groupby(
+    "BMIGroup",
+    observed=True
+)["Outcome"].mean()
+
+print(bmi_risk)
+
+print("\n" + "=" * 60)
+print("DIABETES - OUTCOME RATE BY AGE")
+print("=" * 60)
+
+age_bins = [0, 25, 35, 45, 55, 65, 100]
+
+diabetes["AgeGroup"] = pd.cut(
+    diabetes["Age"],
+    bins=age_bins
+)
+
+age_risk = diabetes.groupby(
+    "AgeGroup",
+    observed=True
+)["Outcome"].mean()
+
+print(age_risk)
+
+print("\n" + "=" * 60)
+print("DIABETES - GROUP SAMPLE SIZE")
+print("=" * 60)
+
+print("\nGlucose groups:")
+print(diabetes["GlucoseGroup"].value_counts().sort_index())
+
+print("\nBMI groups:")
+print(diabetes["BMIGroup"].value_counts().sort_index())
+
+print("\nAge groups:")
+print(diabetes["AgeGroup"].value_counts().sort_index())
+
+print("\n" + "=" * 60)
+print("DIABETES - PREGNANCIES RISK ANALYSIS")
+print("=" * 60)
+
+pregnancy_bins = [-1, 0, 2, 5, 10, 20]
+
+diabetes["PregnancyGroup"] = pd.cut(
+    diabetes["Pregnancies"],
+    bins=pregnancy_bins
+)
+
+pregnancy_risk = diabetes.groupby(
+    "PregnancyGroup",
+    observed=True
+)["Outcome"].mean()
+
+print(pregnancy_risk)
+
+print("\n" + "=" * 60)
+print("DIABETES - FEATURE IMPORTANCE BY CORRELATION")
+print("=" * 60)
+
+# Chỉ lấy các feature dạng số
+numeric_features = diabetes.select_dtypes(include=np.number)
+
+# Bỏ target
+numeric_features = numeric_features.drop(
+    columns=["Outcome"],
+    errors="ignore"
+)
+
+correlation = (
+    numeric_features
+    .corrwith(diabetes["Outcome"])
+    .abs()
+    .sort_values(ascending=False)
+)
+
+print(correlation)
+
+
+features = [
+    "Glucose",
+    "BMI",
+    "Age",
+    "Insulin",
+    "Pregnancies"
+]
+
+for feature in features:
+
+    plt.figure(figsize=(8, 5))
+
+    diabetes[diabetes["Outcome"] == 0][feature].hist(
+        alpha=0.5,
+        label="No Diabetes"
+    )
+
+    diabetes[diabetes["Outcome"] == 1][feature].hist(
+        alpha=0.5,
+        label="Diabetes"
+    )
+
+    plt.xlabel(feature)
+    plt.ylabel("Frequency")
+    plt.title(f"{feature} Distribution by Diabetes Outcome")
+    plt.legend()
+    plt.tight_layout()
+
+    plt.show()
 
 print("\n" + "=" * 60)
 print("DIABETES - GLUCOSE + BMI RISK ANALYSIS")

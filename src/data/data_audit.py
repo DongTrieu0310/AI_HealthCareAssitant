@@ -131,7 +131,7 @@ print("RISK vs SBP EXACT ANALYSIS")
 print("=" * 60)
 
 print(
-    hypertension.groupby("Risk")["sysBP"].agg(
+    hypertension.groupby("Risk")["sysBP"].agg(          #
         ["min", "max", "mean", "median", "std"]
     )
 )
