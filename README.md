@@ -95,15 +95,15 @@ The system follows a multi-model architecture combined with a Decision Engine.
 The Streamlit UI stores patients and their repeated measurements in a local
 SQLite database (`data/patient_records.db`, created automatically).
 
-- **Sidebar → 👥 Patients**: add a patient, switch between patients, delete a
+- **Thanh bên → 👥 Bệnh nhân**: add a patient, switch between patients, delete a
   patient (removes their measurements as well).
-- **📊 Assessment Results → 💾 Save this measurement**: stores the current
+- **📊 Kết quả đánh giá → 💾 Lưu lần đo này**: stores the current
   vitals (BP, glucose, weight, BMI, heart rate, cholesterol) together with the
   predicted probabilities and the overall risk level for the selected patient.
-- **📈 Patient Records**:
-  - *👥 Patient list*: every saved patient with the number of measurements and
+- **📈 Hồ sơ bệnh nhân**:
+  - *👥 Danh sách bệnh nhân*: every saved patient with the number of measurements and
     the date of the last one.
-  - *📊 Measurement history*: latest values with the change since the previous
+  - *📊 Lịch sử đo*: latest values with the change since the previous
     visit, trend charts (blood pressure, glucose/weight/heart rate, predicted
     risk), the full measurement table, a CSV export, and per-measurement delete.
 
@@ -118,5 +118,14 @@ SHOW_TRUSTWORTHY_AI = False
 SHOW_DEFENSE_QA = False
 ```
 
-They hide the "🤖 Trustworthy AI" dashboard and the "❓ Defense Questions &
-Answers" section. Set either to `True` to show that section again.
+They hide the "🤖 Trí tuệ nhân tạo đáng tin cậy" dashboard and the
+"❓ Câu hỏi và câu trả lời bảo vệ" section. Set either to `True` to show that section again.
+
+## Ngôn ngữ giao diện
+
+Toàn bộ phần hiển thị của ứng dụng Streamlit (nhãn form, thông báo lỗi, kết quả
+đánh giá, khuyến nghị, trợ lý Hỏi AI, hồ sơ bệnh nhân) đã được chuyển sang
+tiếng Việt. Các khoá dùng trong logic (`LOW` / `MODERATE` / `HIGH`, khoá bệnh
+`cardio` / `diabetes` / `hypertension`, tên cột trong CSDL) vẫn giữ nguyên tiếng
+Anh; `src/ui/app.py` chỉ dịch ở lớp hiển thị qua `risk_level_vi()` và
+`disease_name_vi()`.

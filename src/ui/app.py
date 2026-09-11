@@ -57,7 +57,7 @@ from storage import patient_records
 # ============================================================
 
 st.set_page_config(
-    page_title="AI Healthcare Assistant",
+    page_title="Trợ lý Sức khỏe AI",
     page_icon="🩺",
     layout="wide"
 )
@@ -77,6 +77,45 @@ SHOW_DEFENSE_QA = False
 
 
 # ============================================================
+# 4.1.1 VIETNAMESE DISPLAY LABELS
+# ============================================================
+
+# The engines keep their English keys (LOW / MODERATE / HIGH and the
+# disease keys). Only the text shown on screen is translated.
+
+RISK_LEVEL_VI = {
+    "LOW": "THẤP",
+    "MODERATE": "TRUNG BÌNH",
+    "HIGH": "CAO",
+}
+
+DISEASE_NAME_VI = {
+    "cardio": "Bệnh tim mạch",
+    "cardiovascular": "Bệnh tim mạch",
+    "diabetes": "Đái tháo đường",
+    "hypertension": "Tăng huyết áp",
+}
+
+
+def risk_level_vi(level):
+    """Hiển thị mức nguy cơ bằng tiếng Việt."""
+
+    return RISK_LEVEL_VI.get(
+        str(level).upper(),
+        level
+    )
+
+
+def disease_name_vi(key):
+    """Hiển thị tên bệnh bằng tiếng Việt."""
+
+    return DISEASE_NAME_VI.get(
+        str(key).lower(),
+        key
+    )
+
+
+# ============================================================
 # 4.2 PATIENT RECORDS (SIDEBAR)
 # ============================================================
 
@@ -89,7 +128,7 @@ saved_patients = patient_records.list_patients()
 
 with st.sidebar:
 
-    st.header("👥 Patients")
+    st.header("👥 Bệnh nhân")
 
     if saved_patients:
 
@@ -100,7 +139,7 @@ with st.sidebar:
         patient_labels = {
             patient["id"]: (
                 f"{patient['name']} "
-                f"({patient['measurement_count']} measurements)"
+                f"({patient['measurement_count']} lần đo)"
             )
             for patient in saved_patients
         }
@@ -114,7 +153,7 @@ with st.sidebar:
         )
 
         st.session_state["selected_patient_id"] = st.selectbox(
-            "Selected patient",
+            "Bệnh nhân đang chọn",
             options=patient_ids,
             index=default_index,
             format_func=lambda pid: patient_labels[pid]
@@ -125,25 +164,25 @@ with st.sidebar:
         st.session_state["selected_patient_id"] = None
 
         st.info(
-            "No patient saved yet. Add a patient to start "
-            "tracking measurements over time."
+            "Chưa có bệnh nhân nào. Thêm bệnh nhân để bắt đầu "
+            "theo dõi các lần đo theo thời gian."
         )
 
-    with st.expander("➕ Add new patient"):
+    with st.expander("➕ Thêm bệnh nhân mới"):
 
         new_patient_name = st.text_input(
-            "Full name",
+            "Họ và tên",
             key="new_patient_name"
         )
 
         new_patient_gender = st.selectbox(
-            "Gender",
-            options=["", "Female", "Male"],
+            "Giới tính",
+            options=["", "Nữ", "Nam"],
             key="new_patient_gender"
         )
 
         new_patient_birth_year = st.number_input(
-            "Birth year",
+            "Năm sinh",
             min_value=1900,
             max_value=2100,
             value=1970,
@@ -151,11 +190,11 @@ with st.sidebar:
         )
 
         new_patient_note = st.text_input(
-            "Note (optional)",
+            "Ghi chú (không bắt buộc)",
             key="new_patient_note"
         )
 
-        if st.button("Save patient", use_container_width=True):
+        if st.button("Lưu bệnh nhân", use_container_width=True):
 
             try:
 
@@ -169,7 +208,7 @@ with st.sidebar:
                 st.session_state["selected_patient_id"] = new_id
 
                 st.success(
-                    f"Patient '{new_patient_name}' saved."
+                    f"Đã lưu bệnh nhân '{new_patient_name}'."
                 )
 
                 st.rerun()
@@ -182,15 +221,15 @@ with st.sidebar:
 
     if selected_patient_id is not None:
 
-        with st.expander("🗑️ Delete selected patient"):
+        with st.expander("🗑️ Xoá bệnh nhân đang chọn"):
 
             st.warning(
-                "Deleting a patient also removes all of their "
-                "stored measurements."
+                "Xoá bệnh nhân sẽ xoá luôn toàn bộ số liệu đo "
+                "đã lưu của người đó."
             )
 
             if st.button(
-                "Delete patient",
+                "Xoá bệnh nhân",
                 use_container_width=True
             ):
 
@@ -207,20 +246,20 @@ with st.sidebar:
 # 5. HEADER
 # ============================================================
 
-st.title("🩺 AI Healthcare Assistant")
+st.title("🩺 Trợ lý Sức khỏe AI")
 
 st.markdown(
     """
-    ### AI-powered health risk assessment
+    ### Đánh giá nguy cơ sức khỏe bằng AI
 
-    This system estimates the risk of:
+    Hệ thống ước tính nguy cơ mắc:
 
-    - Cardiovascular Disease
-    - Diabetes
-    - Hypertension
+    - Bệnh tim mạch
+    - Đái tháo đường
+    - Tăng huyết áp
 
-    **Important:** These results are AI-generated risk estimates
-    and are not medical diagnoses.
+    **Lưu ý:** Đây là ước tính nguy cơ do AI đưa ra,
+    không phải chẩn đoán y khoa.
     """
 )
 
@@ -231,35 +270,36 @@ st.divider()
 # 6. PATIENT INFORMATION
 # ============================================================
 
-st.header("👤 Patient Information")
+st.header("👤 Thông tin bệnh nhân")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
 
     age = st.number_input(
-        "Age",
+        "Tuổi",
         min_value=1,
         max_value=120,
         value=55
     )
 
     gender = st.selectbox(
-        "Gender",
+        "Giới tính",
         options=[1, 2],
         format_func=lambda x:
-            "Female" if x == 1 else "Male"
+            "Nữ" if x == 1 else "Nam",
+        key="cardio_gender"
     )
 
     height = st.number_input(
-        "Height (cm)",
+        "Chiều cao (cm)",
         min_value=50,
         max_value=250,
         value=170
     )
 
     weight = st.number_input(
-        "Weight (kg)",
+        "Cân nặng (kg)",
         min_value=20.0,
         max_value=300.0,
         value=75.0
@@ -269,14 +309,14 @@ with col1:
 with col2:
 
     ap_hi = st.number_input(
-        "Systolic Blood Pressure",
+        "Huyết áp tâm thu (mmHg)",
         min_value=50,
         max_value=250,
         value=140
     )
 
     ap_lo = st.number_input(
-        "Diastolic Blood Pressure",
+        "Huyết áp tâm trương (mmHg)",
         min_value=30,
         max_value=150,
         value=90
@@ -287,20 +327,20 @@ with col2:
         options=[1, 2, 3],
         format_func=lambda x:
             {
-                1: "Normal",
-                2: "Above Normal",
-                3: "Well Above Normal"
+                1: "Bình thường",
+                2: "Trên mức bình thường",
+                3: "Cao hơn nhiều mức bình thường"
             }[x]
     )
 
     gluc = st.selectbox(
-        "Glucose Level",
+        "Mức đường huyết",
         options=[1, 2, 3],
         format_func=lambda x:
             {
-                1: "Normal",
-                2: "Above Normal",
-                3: "Well Above Normal"
+                1: "Bình thường",
+                2: "Trên mức bình thường",
+                3: "Cao hơn nhiều mức bình thường"
             }[x]
     )
 
@@ -308,24 +348,24 @@ with col2:
 with col3:
 
     smoke = st.selectbox(
-        "Smoking",
+        "Hút thuốc",
         options=[0, 1],
         format_func=lambda x:
-            "No" if x == 0 else "Yes"
+            "Không" if x == 0 else "Có"
     )
 
     alco = st.selectbox(
-        "Alcohol Consumption",
+        "Uống rượu bia",
         options=[0, 1],
         format_func=lambda x:
-            "No" if x == 0 else "Yes"
+            "Không" if x == 0 else "Có"
     )
 
     active = st.selectbox(
-        "Physical Activity",
+        "Vận động thể chất",
         options=[0, 1],
         format_func=lambda x:
-            "No" if x == 0 else "Yes"
+            "Không" if x == 0 else "Có"
     )
 
 
@@ -335,28 +375,28 @@ with col3:
 
 st.divider()
 
-st.header("🩸 Diabetes Information")
+st.header("🩸 Thông tin đái tháo đường")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
 
     pregnancies = st.number_input(
-        "Pregnancies",
+        "Số lần mang thai",
         min_value=0,
         max_value=20,
         value=2
     )
 
     glucose = st.number_input(
-        "Glucose",
+        "Đường huyết (Glucose)",
         min_value=0.0,
         max_value=300.0,
         value=148.0
     )
 
     blood_pressure = st.number_input(
-        "Blood Pressure",
+        "Huyết áp",
         min_value=0.0,
         max_value=200.0,
         value=90.0
@@ -366,7 +406,7 @@ with col1:
 with col2:
 
     skin_thickness = st.number_input(
-        "Skin Thickness",
+        "Độ dày nếp da (mm)",
         min_value=0.0,
         max_value=100.0,
         value=35.0
@@ -383,21 +423,21 @@ with col2:
 with col3:
 
     bmi = st.number_input(
-        "BMI",
+        "BMI (chỉ số khối cơ thể)",
         min_value=0.0,
         max_value=80.0,
         value=32.0
     )
 
     diabetes_pedigree = st.number_input(
-        "Diabetes Pedigree Function",
+        "Hệ số tiền sử gia đình (DPF)",
         min_value=0.0,
         max_value=3.0,
         value=0.6
     )
 
     diabetes_age = st.number_input(
-        "Diabetes Age",
+        "Tuổi (mô hình đái tháo đường)",
         min_value=1,
         max_value=120,
         value=55
@@ -410,66 +450,67 @@ with col3:
 
 st.divider()
 
-st.header("❤️ Hypertension Information")
+st.header("❤️ Thông tin tăng huyết áp")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
 
     male = st.selectbox(
-        "Sex",
+        "Giới tính",
         options=[0, 1],
         format_func=lambda x:
-            "Female" if x == 0 else "Male"
+            "Nữ" if x == 0 else "Nam",
+        key="hypertension_sex"
     )
 
     current_smoker = st.selectbox(
-        "Current Smoker",
+        "Hiện đang hút thuốc",
         options=[0, 1],
         format_func=lambda x:
-            "No" if x == 0 else "Yes"
+            "Không" if x == 0 else "Có"
     )
 
     cigs_per_day = st.number_input(
-        "Cigarettes per Day",
+        "Số điếu thuốc mỗi ngày",
         min_value=0.0,
         max_value=100.0,
         value=0.0
     )
 
     bp_meds = st.selectbox(
-        "Blood Pressure Medication",
+        "Đang dùng thuốc huyết áp",
         options=[0, 1],
         format_func=lambda x:
-            "No" if x == 0 else "Yes"
+            "Không" if x == 0 else "Có"
     )
 
 
 with col2:
 
     hypertension_diabetes = st.selectbox(
-        "Diabetes History",
+        "Tiền sử đái tháo đường",
         options=[0, 1],
         format_func=lambda x:
-            "No" if x == 0 else "Yes"
+            "Không" if x == 0 else "Có"
     )
 
     total_chol = st.number_input(
-        "Total Cholesterol",
+        "Cholesterol toàn phần",
         min_value=50.0,
         max_value=500.0,
         value=230.0
     )
 
     systolic_bp = st.number_input(
-        "Systolic BP",
+        "Huyết áp tâm thu",
         min_value=50.0,
         max_value=300.0,
         value=140.0
     )
 
     diastolic_bp = st.number_input(
-        "Diastolic BP",
+        "Huyết áp tâm trương",
         min_value=30.0,
         max_value=200.0,
         value=90.0
@@ -486,14 +527,14 @@ with col3:
     )
 
     heart_rate = st.number_input(
-        "Heart Rate",
+        "Nhịp tim (lần/phút)",
         min_value=30.0,
         max_value=220.0,
         value=75.0
     )
 
     hypertension_glucose = st.number_input(
-        "Glucose",
+        "Đường huyết",
         min_value=30.0,
         max_value=500.0,
         value=110.0
@@ -533,10 +574,10 @@ if (
 
 st.divider()
 
-st.header("🔍 Health Risk Assessment")
+st.header("🔍 Đánh giá nguy cơ sức khỏe")
 
 assess_button = st.button(
-    "🩺 ASSESS HEALTH RISK",
+    "🩺 ĐÁNH GIÁ NGUY CƠ",
     type="primary",
     use_container_width=True
 )
@@ -559,17 +600,17 @@ def validate_patient_input(patient):
 
     if not 1 <= patient["age"] <= 120:
         errors.append(
-            "Age must be between 1 and 120."
+            "Tuổi phải nằm trong khoảng 1 đến 120."
         )
 
     if not 50 <= patient["height"] <= 250:
         errors.append(
-            "Height must be between 50 and 250 cm."
+            "Chiều cao phải nằm trong khoảng 50 đến 250 cm."
         )
 
     if not 20 <= patient["weight"] <= 300:
         errors.append(
-            "Weight must be between 20 and 300 kg."
+            "Cân nặng phải nằm trong khoảng 20 đến 300 kg."
         )
 
     # --------------------------------------------------------
@@ -578,20 +619,20 @@ def validate_patient_input(patient):
 
     if not 50 <= patient["ap_hi"] <= 250:
         errors.append(
-            "Systolic blood pressure must be between "
-            "50 and 250 mmHg."
+            "Huyết áp tâm thu phải nằm trong khoảng "
+            "50 đến 250 mmHg."
         )
 
     if not 30 <= patient["ap_lo"] <= 150:
         errors.append(
-            "Diastolic blood pressure must be between "
-            "30 and 150 mmHg."
+            "Huyết áp tâm trương phải nằm trong khoảng "
+            "30 đến 150 mmHg."
         )
 
     if patient["ap_hi"] <= patient["ap_lo"]:
         errors.append(
-            "Systolic blood pressure must be higher "
-            "than diastolic blood pressure."
+            "Huyết áp tâm thu phải cao hơn "
+            "huyết áp tâm trương."
         )
 
     # --------------------------------------------------------
@@ -600,25 +641,25 @@ def validate_patient_input(patient):
 
     if not 0 <= patient["Pregnancies"] <= 20:
         errors.append(
-            "Pregnancies must be between 0 and 20."
+            "Số lần mang thai phải nằm trong khoảng 0 đến 20."
         )
 
     if not 0 <= patient["Glucose"] <= 300:
         errors.append(
-            "Diabetes glucose must be between 0 and 300."
+            "Đường huyết (đái tháo đường) phải nằm trong khoảng 0 đến 300."
         )
 
     if not 0 <= patient["BMI"] <= 80:
         errors.append(
-            "BMI must be between 0 and 80."
+            "BMI phải nằm trong khoảng 0 đến 80."
         )
 
     if not 0 <= patient[
         "DiabetesPedigreeFunction"
     ] <= 3:
         errors.append(
-            "Diabetes Pedigree Function must be "
-            "between 0 and 3."
+            "Hệ số tiền sử gia đình (DPF) phải nằm "
+            "trong khoảng 0 đến 3."
         )
 
     # --------------------------------------------------------
@@ -627,36 +668,36 @@ def validate_patient_input(patient):
 
     if not 0 <= patient["cigsPerDay"] <= 100:
         errors.append(
-            "Cigarettes per day must be between 0 and 100."
+            "Số điếu thuốc mỗi ngày phải nằm trong khoảng 0 đến 100."
         )
 
     if not 50 <= patient["sysBP"] <= 300:
         errors.append(
-            "Hypertension systolic BP must be "
-            "between 50 and 300 mmHg."
+            "Huyết áp tâm thu (tăng huyết áp) phải nằm "
+            "trong khoảng 50 đến 300 mmHg."
         )
 
     if not 30 <= patient["diaBP"] <= 200:
         errors.append(
-            "Hypertension diastolic BP must be "
-            "between 30 and 200 mmHg."
+            "Huyết áp tâm trương (tăng huyết áp) phải nằm "
+            "trong khoảng 30 đến 200 mmHg."
         )
 
     if patient["sysBP"] <= patient["diaBP"]:
         errors.append(
-            "Hypertension systolic BP must be higher "
-            "than diastolic BP."
+            "Huyết áp tâm thu phải cao hơn "
+            "huyết áp tâm trương."
         )
 
     if not 30 <= patient["heartRate"] <= 220:
         errors.append(
-            "Heart rate must be between 30 and 220 bpm."
+            "Nhịp tim phải nằm trong khoảng 30 đến 220 lần/phút."
         )
 
     if not 30 <= patient["glucose"] <= 500:
         errors.append(
-            "Hypertension glucose must be "
-            "between 30 and 500."
+            "Đường huyết (tăng huyết áp) phải nằm "
+            "trong khoảng 30 đến 500."
         )
 
     return errors
@@ -725,7 +766,7 @@ if assess_button:
         if validation_errors:
 
             st.error(
-                "Please correct the following input errors:"
+                "Vui lòng sửa các lỗi nhập liệu sau:"
             )
 
             for error in validation_errors:
@@ -758,13 +799,13 @@ if assess_button:
         )
 
         st.success(
-            "Health assessment completed successfully."
+            "Đã hoàn tất đánh giá sức khỏe."
         )
 
     except Exception as e:
 
         st.error(
-            f"Assessment failed: {e}"
+            f"Đánh giá thất bại: {e}"
         )
 
 
@@ -799,36 +840,36 @@ if st.session_state.get("assessment") is not None:
 
     st.divider()
 
-    st.header("📊 Assessment Results")
+    st.header("📊 Kết quả đánh giá")
 
     # --------------------------------------------------------
     # Disease probabilities
     # --------------------------------------------------------
 
     st.subheader(
-        "Disease Risk Probabilities"
+        "Xác suất nguy cơ theo từng bệnh"
     )
 
     probability_columns = st.columns(3)
 
     disease_mapping = {
         "cardio":
-            "Cardiovascular Disease",
+            "Bệnh tim mạch",
         "diabetes":
-            "Diabetes",
+            "Đái tháo đường",
         "hypertension":
-            "Hypertension"
+            "Tăng huyết áp"
     }
 
     # Mapping used by the Decision Engine and Recommendation Engine.
     # Keep it aligned with the disease keys returned by the application layer.
     decision_mapping = {
         "cardiovascular":
-            "Cardiovascular Disease",
+            "Bệnh tim mạch",
         "diabetes":
-            "Diabetes",
+            "Đái tháo đường",
         "hypertension":
-            "Hypertension"
+            "Tăng huyết áp"
     }
 
     for column, (
@@ -871,7 +912,7 @@ if st.session_state.get("assessment") is not None:
     # --------------------------------------------------------
 
     st.subheader(
-        "Risk Levels"
+        "Mức nguy cơ"
     )
 
     diseases = decision.get(
@@ -882,9 +923,9 @@ if st.session_state.get("assessment") is not None:
     # The Decision Engine supplies the risk level. The percentage shown here
     # is taken from the SAME prediction object displayed above.
     display_mapping = {
-        "cardio": ("cardiovascular", "Cardiovascular Disease"),
-        "diabetes": ("diabetes", "Diabetes"),
-        "hypertension": ("hypertension", "Hypertension")
+        "cardio": ("cardiovascular", "Bệnh tim mạch"),
+        "diabetes": ("diabetes", "Đái tháo đường"),
+        "hypertension": ("hypertension", "Tăng huyết áp")
     }
 
     for prediction_key, (decision_key, disease_name) in (
@@ -912,13 +953,13 @@ if st.session_state.get("assessment") is not None:
 
         if probability is None:
             st.write(
-                f"**{disease_name}:** {risk_level}"
+                f"**{disease_name}:** {risk_level_vi(risk_level)}"
             )
         else:
             # Never use decision_result["risk_score"] for the displayed %.
             st.write(
                 f"**{disease_name}:** "
-                f"{risk_level} "
+                f"{risk_level_vi(risk_level)} "
                 f"({float(probability):.2%})"
             )
 
@@ -927,7 +968,7 @@ if st.session_state.get("assessment") is not None:
     # --------------------------------------------------------
 
     st.subheader(
-        "Overall Risk Assessment"
+        "Đánh giá nguy cơ tổng thể"
     )
 
     overall_risk = decision.get(
@@ -945,15 +986,15 @@ if st.session_state.get("assessment") is not None:
     with col1:
 
         st.metric(
-            "Overall Risk",
-            overall_risk
+            "Nguy cơ tổng thể",
+            risk_level_vi(overall_risk)
         )
 
     with col2:
 
         st.metric(
-            "Priority Disease",
-            priority_disease
+            "Bệnh cần ưu tiên",
+            disease_name_vi(priority_disease)
         )
 
     # --------------------------------------------------------
@@ -965,7 +1006,7 @@ if st.session_state.get("assessment") is not None:
     with col1:
 
         st.write(
-            "**High-risk conditions:**",
+            "**Số bệnh nguy cơ cao:**",
             decision.get(
                 "high_risk_count",
                 0
@@ -975,7 +1016,7 @@ if st.session_state.get("assessment") is not None:
     with col2:
 
         st.write(
-            "**Moderate-risk conditions:**",
+            "**Số bệnh nguy cơ trung bình:**",
             decision.get(
                 "moderate_risk_count",
                 0
@@ -989,7 +1030,7 @@ if st.session_state.get("assessment") is not None:
     st.divider()
 
     st.header(
-        "💡 Health Recommendations"
+        "💡 Khuyến nghị sức khỏe"
     )
 
     disease_recommendations = (
@@ -1035,7 +1076,7 @@ if st.session_state.get("assessment") is not None:
         )
 
         st.write(
-            f"Risk level: **{risk_level}**"
+            f"Mức nguy cơ: **{risk_level_vi(risk_level)}**"
         )
 
         for recommendation in (
@@ -1060,7 +1101,7 @@ if st.session_state.get("assessment") is not None:
     if overall_recommendations:
 
         st.subheader(
-            "Overall Recommendations"
+            "Khuyến nghị chung"
         )
 
         for recommendation in (
@@ -1077,7 +1118,7 @@ if st.session_state.get("assessment") is not None:
 
     st.divider()
 
-    st.subheader("💾 Save this measurement")
+    st.subheader("💾 Lưu lần đo này")
 
     selected_patient_id = st.session_state.get(
         "selected_patient_id"
@@ -1086,8 +1127,8 @@ if st.session_state.get("assessment") is not None:
     if selected_patient_id is None:
 
         st.info(
-            "Select or add a patient in the sidebar to save this "
-            "assessment and follow the patient over time."
+            "Chọn hoặc thêm bệnh nhân ở thanh bên để lưu kết quả "
+            "đánh giá này và theo dõi bệnh nhân theo thời gian."
         )
 
     else:
@@ -1097,12 +1138,12 @@ if st.session_state.get("assessment") is not None:
         )
 
         measurement_note = st.text_input(
-            "Note for this measurement (optional)",
+            "Ghi chú cho lần đo này (không bắt buộc)",
             key="measurement_note"
         )
 
         if st.button(
-            f"💾 Save measurement for {selected_patient['name']}",
+            f"💾 Lưu lần đo cho {selected_patient['name']}",
             use_container_width=True
         ):
 
@@ -1138,7 +1179,7 @@ if st.session_state.get("assessment") is not None:
             )
 
             st.success(
-                "Measurement saved for "
+                "Đã lưu lần đo cho "
                 f"{selected_patient['name']}."
             )
 
@@ -1150,26 +1191,26 @@ if st.session_state.get("assessment") is not None:
 
     if SHOW_TRUSTWORTHY_AI:
         st.divider()
-        st.header("🤖 Trustworthy AI")
+        st.header("🤖 Trí tuệ nhân tạo đáng tin cậy")
 
         st.markdown(
             """
-            This section presents the Trustworthy AI evaluation of the
-            healthcare risk-assessment system. The evaluation covers
-            fairness, robustness, explainability, bias, privacy,
-            accountability, social impact, and mathematical foundations.
+            Phần này trình bày đánh giá Trustworthy AI của hệ thống
+            đánh giá nguy cơ sức khỏe, bao gồm: tính công bằng, độ bền
+            vững, khả năng giải thích, thiên lệch, quyền riêng tư, trách
+            nhiệm giải trình, tác động xã hội và nền tảng toán học.
             """
         )
 
         ta_tabs = st.tabs([
-            "📋 Overview",
-            "🔍 Explainability & SHAP",
-            "⚖️ Fairness & Bias",
-            "🛡️ Robustness",
-            "🔐 Privacy",
-            "📋 Accountability",
-            "🌍 Social Impact",
-            "🧮 Math AI"
+            "📋 Tổng quan",
+            "🔍 Khả năng giải thích & SHAP",
+            "⚖️ Công bằng & Thiên lệch",
+            "🛡️ Độ bền vững",
+            "🔐 Quyền riêng tư",
+            "📋 Trách nhiệm giải trình",
+            "🌍 Tác động xã hội",
+            "🧮 Nền tảng toán học"
         ])
 
         # ------------------------------------------------------------
@@ -1177,17 +1218,17 @@ if st.session_state.get("assessment") is not None:
         # ------------------------------------------------------------
         with ta_tabs[0]:
 
-            st.subheader("Trustworthy AI Evaluation Status")
+            st.subheader("Tình trạng đánh giá Trustworthy AI")
 
             overview_items = [
-                ("⚖️ Fairness", "Evaluated"),
-                ("🛡️ Robustness", "Evaluated"),
-                ("🔍 Explainability", "Evaluated"),
-                ("📊 Bias Analysis", "Evaluated"),
-                ("🔐 Privacy", "Evaluated"),
-                ("📋 Accountability", "Evaluated"),
-                ("🌍 Social Impact", "Evaluated"),
-                ("🧮 Math AI", "Evaluated"),
+                ("⚖️ Công bằng", "Đã đánh giá"),
+                ("🛡️ Độ bền vững", "Đã đánh giá"),
+                ("🔍 Khả năng giải thích", "Đã đánh giá"),
+                ("📊 Phân tích thiên lệch", "Đã đánh giá"),
+                ("🔐 Quyền riêng tư", "Đã đánh giá"),
+                ("📋 Trách nhiệm giải trình", "Đã đánh giá"),
+                ("🌍 Tác động xã hội", "Đã đánh giá"),
+                ("🧮 Nền tảng toán học", "Đã đánh giá"),
             ]
 
             overview_cols = st.columns(4)
@@ -1197,21 +1238,21 @@ if st.session_state.get("assessment") is not None:
                     st.metric(name, status)
 
             st.info(
-                "Trustworthy AI evaluation is intended to support "
-                "responsible use of the system. It does not guarantee "
-                "that every prediction is correct or free from bias."
+                "Đánh giá Trustworthy AI nhằm hỗ trợ sử dụng hệ thống một "
+                "cách có trách nhiệm. Nó không bảo đảm mọi dự đoán đều đúng "
+                "hoặc hoàn toàn không có thiên lệch."
             )
 
-            st.subheader("Known Evaluation Limitations")
+            st.subheader("Các hạn chế đã biết")
 
             limitations = [
-                "Performance can differ between demographic groups.",
-                "Model performance can decrease when input noise is introduced.",
-                "False-positive and false-negative predictions remain possible.",
-                "Healthcare data contains sensitive information.",
-                "The CARDIO dataset contains a direct identifier.",
-                "Human oversight is required for medical decisions.",
-                "Production monitoring and audit logging are not yet implemented."
+                "Hiệu năng có thể khác nhau giữa các nhóm nhân khẩu học.",
+                "Hiệu năng mô hình có thể giảm khi dữ liệu đầu vào bị nhiễu.",
+                "Vẫn có khả năng dự đoán dương tính giả và âm tính giả.",
+                "Dữ liệu y tế chứa thông tin nhạy cảm.",
+                "Bộ dữ liệu CARDIO chứa định danh trực tiếp.",
+                "Quyết định y khoa vẫn cần sự giám sát của con người.",
+                "Chưa triển khai giám sát vận hành và nhật ký kiểm toán."
             ]
 
             for item in limitations:
@@ -1222,32 +1263,32 @@ if st.session_state.get("assessment") is not None:
         # ------------------------------------------------------------
         with ta_tabs[1]:
 
-            st.subheader("🔍 Model Explainability")
+            st.subheader("🔍 Khả năng giải thích của mô hình")
 
             explainability = {
-                "Cardiovascular Disease": ("ap_hi", 0.145809),
-                "Diabetes": ("SkinThickness", 0.134053),
-                "Hypertension": ("sysBP", 0.200924),
+                "Bệnh tim mạch": ("ap_hi", 0.145809),
+                "Đái tháo đường": ("SkinThickness", 0.134053),
+                "Tăng huyết áp": ("sysBP", 0.200924),
             }
 
             for disease, (feature, importance) in explainability.items():
                 with st.expander(disease, expanded=True):
                     st.write(
-                        f"**Most influential feature:** `{feature}`"
+                        f"**Đặc trưng ảnh hưởng nhiều nhất:** `{feature}`"
                     )
                     st.write(
-                        f"**Mean absolute SHAP value:** {importance:.6f}"
+                        f"**Giá trị SHAP tuyệt đối trung bình:** {importance:.6f}"
                     )
 
             st.markdown("---")
-            st.subheader("SHAP Visualizations")
+            st.subheader("Biểu đồ SHAP")
 
             xai_dir = PROJECT_ROOT / "data" / "models" / "xai"
 
             image_groups = {
-                "Cardiovascular Disease": ["cardio"],
-                "Diabetes": ["diabetes"],
-                "Hypertension": ["hypertension"],
+                "Bệnh tim mạch": ["cardio"],
+                "Đái tháo đường": ["diabetes"],
+                "Tăng huyết áp": ["hypertension"],
             }
 
             if xai_dir.exists():
@@ -1271,14 +1312,14 @@ if st.session_state.get("assessment") is not None:
                             )
             else:
                 st.info(
-                    "SHAP visualization directory was not found. "
-                    "The numerical explainability results are still shown above."
+                    "Không tìm thấy thư mục biểu đồ SHAP. "
+                    "Kết quả giải thích dạng số vẫn được hiển thị ở trên."
                 )
 
             st.caption(
-                "SHAP values describe how input features contribute to "
-                "model predictions. They should be interpreted as model "
-                "explanations, not medical causation."
+                "Giá trị SHAP cho biết các đặc trưng đầu vào đóng góp thế nào "
+                "vào dự đoán của mô hình. Đây là lời giải thích về mô hình, "
+                "không phải quan hệ nhân quả y khoa."
             )
 
         # ------------------------------------------------------------
@@ -1286,12 +1327,12 @@ if st.session_state.get("assessment") is not None:
         # ------------------------------------------------------------
         with ta_tabs[2]:
 
-            st.subheader("⚖️ Fairness")
+            st.subheader("⚖️ Tính công bằng")
 
             st.write(
-                "Fairness analysis compares model performance across "
-                "different demographic groups using Accuracy, Precision, "
-                "Recall, and F1-score."
+                "Phân tích công bằng so sánh hiệu năng mô hình giữa các nhóm "
+                "nhân khẩu học khác nhau qua Accuracy, Precision, Recall và "
+                "F1-score."
             )
 
             fairness_metrics = [
@@ -1302,26 +1343,26 @@ if st.session_state.get("assessment") is not None:
             ]
 
             for metric in fairness_metrics:
-                st.write(f"• {metric}: evaluated across groups")
+                st.write(f"• {metric}: đã đánh giá theo từng nhóm")
 
             st.warning(
-                "Observed performance differences between groups should "
-                "be monitored. A performance disparity alone should not "
-                "automatically be interpreted as proof of discriminatory bias."
+                "Chênh lệch hiệu năng giữa các nhóm cần được theo dõi. Chỉ "
+                "riêng chênh lệch hiệu năng thì chưa đủ để kết luận là có "
+                "thiên lệch mang tính phân biệt đối xử."
             )
 
-            st.subheader("📊 Bias Analysis")
+            st.subheader("📊 Phân tích thiên lệch")
 
             st.write(
-                "Bias analysis is used to identify performance disparities "
-                "and potential sources of systematic differences."
+                "Phân tích thiên lệch giúp phát hiện chênh lệch hiệu năng và "
+                "các nguồn gây khác biệt mang tính hệ thống."
             )
 
-            st.success("Bias analysis completed.")
+            st.success("Đã hoàn tất phân tích thiên lệch.")
 
             st.caption(
-                "The current prototype focuses on evaluation and monitoring. "
-                "It does not claim that the models are completely bias-free."
+                "Bản thử nghiệm hiện tại tập trung vào đánh giá và theo dõi, "
+                "không khẳng định mô hình hoàn toàn không có thiên lệch."
             )
 
         # ------------------------------------------------------------
@@ -1329,87 +1370,86 @@ if st.session_state.get("assessment") is not None:
         # ------------------------------------------------------------
         with ta_tabs[3]:
 
-            st.subheader("🛡️ Robustness Evaluation")
+            st.subheader("🛡️ Đánh giá độ bền vững")
 
             st.write(
-                "Robustness testing evaluates whether model performance "
-                "remains stable when perturbations or noise are introduced "
-                "into the input data."
+                "Kiểm thử độ bền vững xem xét hiệu năng mô hình có ổn định "
+                "hay không khi dữ liệu đầu vào bị nhiễu hoặc bị thay đổi nhẹ."
             )
 
             st.code(
-                """Original input
+                """Dữ liệu đầu vào gốc
           ↓
-    Add perturbation / noise
+    Thêm nhiễu / thay đổi nhẹ
           ↓
-    Run model
+    Chạy mô hình
           ↓
-    Compare predictions
+    So sánh dự đoán
           ↓
-    Measure performance degradation""",
+    Đo mức suy giảm hiệu năng""",
                 language="text"
             )
 
             st.warning(
-                "The evaluation shows that model performance can decrease "
-                "when input noise is introduced. Therefore, predictions "
-                "should be interpreted with appropriate caution."
+                "Kết quả cho thấy hiệu năng mô hình có thể giảm khi dữ liệu "
+                "đầu vào bị nhiễu. Vì vậy cần diễn giải dự đoán một cách "
+                "thận trọng."
             )
 
-            st.success("Robustness analysis completed.")
+            st.success("Đã hoàn tất phân tích độ bền vững.")
 
         # ------------------------------------------------------------
         # Privacy
         # ------------------------------------------------------------
         with ta_tabs[4]:
 
-            st.subheader("🔐 Privacy")
+            st.subheader("🔐 Quyền riêng tư")
 
             st.write(
-                "The privacy analysis checks the healthcare datasets for "
-                "direct identifiers and highlights the presence of "
-                "sensitive health information."
+                "Phân tích quyền riêng tư kiểm tra xem bộ dữ liệu y tế có "
+                "chứa định danh trực tiếp hay không và chỉ ra sự hiện diện "
+                "của thông tin sức khỏe nhạy cảm."
             )
 
             privacy_items = [
-                ("Healthcare data", "Sensitive health information present"),
-                ("CARDIO dataset", "Direct identifier detected in source data"),
-                ("System purpose", "Risk estimation / decision support"),
+                ("Dữ liệu y tế", "Có chứa thông tin sức khỏe nhạy cảm"),
+                ("Bộ dữ liệu CARDIO", "Phát hiện định danh trực tiếp trong dữ liệu gốc"),
+                ("Mục đích hệ thống", "Ước tính nguy cơ / hỗ trợ quyết định"),
             ]
 
             for item, result in privacy_items:
                 st.write(f"**{item}:** {result}")
 
             st.warning(
-                "The CARDIO source dataset contains a direct identifier. "
-                "Such identifiers should not be exposed in a production "
-                "deployment and should be removed or protected."
+                "Bộ dữ liệu gốc CARDIO chứa định danh trực tiếp. Khi triển "
+                "khai thực tế, những định danh này phải được loại bỏ hoặc "
+                "bảo vệ, không được để lộ."
             )
 
-            st.success("Privacy analysis completed.")
+            st.success("Đã hoàn tất phân tích quyền riêng tư.")
 
         # ------------------------------------------------------------
         # Accountability
         # ------------------------------------------------------------
         with ta_tabs[5]:
 
-            st.subheader("📋 Accountability")
+            st.subheader("📋 Trách nhiệm giải trình")
 
             accountability_items = [
-                "The system identifies the three disease-specific models.",
-                "Prediction results are passed through a Decision Engine.",
-                "Risk levels are explicitly classified as LOW, MODERATE, or HIGH.",
-                "Recommendations are separated from medical diagnosis.",
-                "The system includes a medical-use disclaimer.",
-                "Human healthcare professionals remain responsible for final decisions."
+                "Hệ thống nêu rõ ba mô hình tương ứng với ba bệnh.",
+                "Kết quả dự đoán được đưa qua Decision Engine.",
+                "Mức nguy cơ được phân loại rõ ràng: THẤP, TRUNG BÌNH hoặc CAO.",
+                "Khuyến nghị được tách bạch với chẩn đoán y khoa.",
+                "Hệ thống có cảnh báo về giới hạn sử dụng trong y tế.",
+                "Nhân viên y tế vẫn chịu trách nhiệm về quyết định cuối cùng."
             ]
 
             for item in accountability_items:
                 st.write(f"✅ {item}")
 
             st.info(
-                "The AI system is designed as a decision-support prototype "
-                "and should not replace qualified healthcare professionals."
+                "Hệ thống AI này là bản thử nghiệm hỗ trợ quyết định, không "
+                "thay thế nhân viên y tế có chuyên môn."
             )
 
         # ------------------------------------------------------------
@@ -1417,39 +1457,40 @@ if st.session_state.get("assessment") is not None:
         # ------------------------------------------------------------
         with ta_tabs[6]:
 
-            st.subheader("🌍 Social Impact")
+            st.subheader("🌍 Tác động xã hội")
 
             col_positive, col_negative = st.columns(2)
 
             with col_positive:
-                st.markdown("### Potential Positive Impacts")
+                st.markdown("### Tác động tích cực tiềm năng")
 
                 positive = [
-                    "Support early risk screening.",
-                    "Help users monitor important health indicators.",
-                    "Provide accessible AI-assisted risk estimation.",
-                    "Support healthcare professionals with additional information."
+                    "Hỗ trợ sàng lọc nguy cơ sớm.",
+                    "Giúp người dùng theo dõi các chỉ số sức khỏe quan trọng.",
+                    "Cung cấp ước tính nguy cơ có AI hỗ trợ, dễ tiếp cận.",
+                    "Cung cấp thêm thông tin tham khảo cho nhân viên y tế."
                 ]
 
                 for item in positive:
                     st.write(f"🟢 {item}")
 
             with col_negative:
-                st.markdown("### Potential Negative Impacts")
+                st.markdown("### Tác động tiêu cực tiềm năng")
 
                 negative = [
-                    "False-positive predictions may cause unnecessary concern.",
-                    "False-negative predictions may create false reassurance.",
-                    "Users may rely too heavily on AI-generated results.",
-                    "Bias or performance differences may affect some groups."
+                    "Dự đoán dương tính giả có thể gây lo lắng không cần thiết.",
+                    "Dự đoán âm tính giả có thể tạo cảm giác an tâm sai lầm.",
+                    "Người dùng có thể phụ thuộc quá mức vào kết quả của AI.",
+                    "Thiên lệch hoặc chênh lệch hiệu năng có thể ảnh hưởng tới một số nhóm."
                 ]
 
                 for item in negative:
                     st.write(f"🔴 {item}")
 
             st.info(
-                "Human oversight, explainability, fairness evaluation, "
-                "and clear disclaimers are important mitigation measures."
+                "Giám sát của con người, khả năng giải thích, đánh giá công "
+                "bằng và cảnh báo rõ ràng là những biện pháp giảm thiểu quan "
+                "trọng."
             )
 
         # ------------------------------------------------------------
@@ -1457,31 +1498,31 @@ if st.session_state.get("assessment") is not None:
         # ------------------------------------------------------------
         with ta_tabs[7]:
 
-            st.subheader("🧮 Mathematical Foundations")
+            st.subheader("🧮 Nền tảng toán học")
 
             math_items = [
                 (
-                    "Calculus",
-                    "Supports understanding of change, optimization, "
-                    "and model-related mathematical concepts."
+                    "Giải tích",
+                    "Nền tảng để hiểu về sự biến thiên, tối ưu hóa và các "
+                    "khái niệm toán học liên quan tới mô hình."
                 ),
                 (
-                    "Linear Algebra",
-                    "Provides the mathematical foundation for vectors, "
-                    "matrices, and feature representations."
+                    "Đại số tuyến tính",
+                    "Nền tảng toán học cho vector, ma trận và cách biểu diễn "
+                    "đặc trưng."
                 ),
                 (
-                    "Advanced Linear Algebra",
-                    "Supports matrix-based analysis and transformations."
+                    "Đại số tuyến tính nâng cao",
+                    "Hỗ trợ phân tích và biến đổi dựa trên ma trận."
                 ),
                 (
-                    "Probability",
-                    "Provides the foundation for probabilistic risk estimates."
+                    "Xác suất",
+                    "Nền tảng cho các ước tính nguy cơ mang tính xác suất."
                 ),
                 (
-                    "Statistics",
-                    "Supports descriptive statistics, variability, "
-                    "correlation, and model evaluation."
+                    "Thống kê",
+                    "Hỗ trợ thống kê mô tả, độ biến thiên, tương quan và "
+                    "đánh giá mô hình."
                 ),
             ]
 
@@ -1489,16 +1530,16 @@ if st.session_state.get("assessment") is not None:
                 with st.expander(topic):
                     st.write(description)
 
-            st.success("Math AI evaluation completed.")
+            st.success("Đã hoàn tất phần nền tảng toán học.")
 
     # ========================================================
     # DEFENSE / Q&A
     # ========================================================
     if SHOW_DEFENSE_QA:
         st.divider()
-        st.header("❓ Defense Questions & Answers")
+        st.header("❓ Câu hỏi và câu trả lời bảo vệ")
         st.markdown(
-            "Use these questions to explain the safety, limitations, and responsible-use design of the system during a project demonstration or defense."
+            "Dùng các câu hỏi này để trình bày về độ an toàn, giới hạn và thiết kế sử dụng có trách nhiệm của hệ thống khi demo hoặc bảo vệ đồ án."
         )
 
         defense_questions = [
@@ -1537,18 +1578,18 @@ if st.session_state.get("assessment") is not None:
                 st.write(answer)
 
         st.info(
-            "Defense principle: AI supports screening and decision support; it does not replace clinical diagnosis or medical decision-making."
+            "Nguyên tắc bảo vệ: AI hỗ trợ sàng lọc và hỗ trợ quyết định; không thay thế chẩn đoán lâm sàng hay quyết định y khoa."
         )
 
     # ========================================================
     # ASK AI - HEALTH INFORMATION ASSISTANT
     # ========================================================
     st.divider()
-    st.header("🤖 Ask AI")
+    st.header("🤖 Hỏi AI")
     st.markdown(
-        "Ask general health-information questions or ask the assistant "
-        "to explain the current risk assessment. This assistant is for "
-        "education and decision support only."
+        "Đặt câu hỏi chung về sức khỏe hoặc nhờ trợ lý giải thích kết quả "
+        "đánh giá hiện tại. Trợ lý chỉ nhằm mục đích tham khảo và hỗ trợ "
+        "quyết định."
     )
 
     def ask_ai_local(question, assessment_data):
@@ -1571,10 +1612,10 @@ if st.session_state.get("assessment") is not None:
 
         if any(term in q for term in unsafe_terms):
             return (
-                "I can't diagnose a condition, prescribe medication, recommend "
-                "a medication dose, or tell you to start/stop/change treatment. "
-                "For treatment decisions, please consult a qualified healthcare "
-                "professional."
+                "Tôi không thể chẩn đoán bệnh, kê đơn, đề xuất liều thuốc, "
+                "hay yêu cầu bạn bắt đầu/ngừng/thay đổi điều trị. "
+                "Với các quyết định điều trị, vui lòng trao đổi với nhân viên "
+                "y tế có chuyên môn."
             )
 
         # Explain the current assessment when available.
@@ -1584,21 +1625,22 @@ if st.session_state.get("assessment") is not None:
 
             if any(word in q for word in [
                 "current result", "my result", "kết quả", "risk", "rủi ro",
-                "overall", "tổng thể", "priority", "ưu tiên"
+                "overall", "tổng thể", "priority", "ưu tiên", "nguy cơ",
+                "bệnh nào"
             ]):
                 overall = decision_data.get("overall_risk", "N/A")
                 priority = decision_data.get("priority_disease", "N/A")
 
                 lines = [
-                    f"Mức nguy cơ tổng thể: {overall}",
-                    f"Bệnh có mức ưu tiên cao nhất: {priority}",
+                    f"Mức nguy cơ tổng thể: {risk_level_vi(overall)}",
+                    f"Bệnh có mức ưu tiên cao nhất: {disease_name_vi(priority)}",
                     ""
                 ]
 
                 mapping = {
-                    "cardio": "Cardiovascular Disease",
-                    "diabetes": "Diabetes",
-                    "hypertension": "Hypertension"
+                    "cardio": "Bệnh tim mạch",
+                    "diabetes": "Đái tháo đường",
+                    "hypertension": "Tăng huyết áp"
                 }
 
                 for key, name in mapping.items():
@@ -1612,7 +1654,7 @@ if st.session_state.get("assessment") is not None:
                         level = disease_decision.get("risk_level", "N/A")
                         lines.append(
                             f"{name}: {float(probability):.2%} "
-                            f"({level})"
+                            f"({risk_level_vi(level)})"
                         )
 
                 lines.append(
@@ -1623,83 +1665,83 @@ if st.session_state.get("assessment") is not None:
             if any(word in q for word in [
                 "why high", "why moderate", "why low", "tại sao cao",
                 "tại sao trung bình", "tại sao thấp", "why my risk",
-                "vì sao rủi ro"
+                "vì sao rủi ro", "vì sao nguy cơ", "tại sao nguy cơ"
             ]):
                 return (
-                    "The risk level is determined by the Decision Engine from the "
-                    "probabilities produced by the three disease models. A higher "
-                    "model probability leads to a higher risk category. This is a "
-                    "modeling result, not a statement that a particular feature "
-                    "caused the disease."
+                    "Mức nguy cơ do Decision Engine xác định dựa trên xác suất "
+                    "của ba mô hình bệnh. Xác suất mô hình càng cao thì mức "
+                    "nguy cơ càng cao. Đây là kết quả của mô hình, không khẳng "
+                    "định rằng một yếu tố cụ thể nào đó gây ra bệnh."
                 )
 
         # General educational answers.
         if any(word in q for word in ["blood pressure", "huyết áp", "bp"]):
             return (
-                "Blood pressure has two main values: systolic pressure and "
-                "diastolic pressure. Repeatedly elevated readings can be an "
-                "important cardiovascular risk factor. The app uses blood-pressure "
-                "features as model inputs, but the model output should not be treated "
-                "as a clinical diagnosis."
+                "Huyết áp gồm hai trị số: huyết áp tâm thu và huyết áp tâm "
+                "trương. Chỉ số cao lặp lại nhiều lần có thể là yếu tố nguy cơ "
+                "tim mạch quan trọng. Ứng dụng dùng các chỉ số huyết áp làm đầu "
+                "vào cho mô hình, nhưng kết quả mô hình không phải là chẩn đoán "
+                "lâm sàng."
             )
 
         if any(word in q for word in ["bmi", "cân nặng", "weight"]):
             return (
-                "BMI is a simple ratio of weight to height used as one population-level "
-                "indicator related to body size. It does not by itself diagnose a disease "
-                "and does not directly describe body composition."
+                "BMI là tỉ số đơn giản giữa cân nặng và chiều cao, dùng như một "
+                "chỉ báo ở mức quần thể liên quan tới thể trạng. Bản thân BMI không "
+                "chẩn đoán bệnh và không mô tả trực tiếp thành phần cơ thể."
             )
 
         if any(word in q for word in ["diabetes", "tiểu đường", "glucose", "đường huyết"]):
             return (
-                "Glucose is an important variable in diabetes risk assessment. Other "
-                "factors can also contribute to risk. This application estimates risk "
-                "from a machine-learning model and is not a diagnostic test."
+                "Đường huyết là biến quan trọng khi đánh giá nguy cơ đái tháo đường. "
+                "Nhiều yếu tố khác cũng góp phần vào nguy cơ. Ứng dụng ước tính nguy "
+                "cơ bằng mô hình học máy, không phải là xét nghiệm chẩn đoán."
             )
 
         if any(word in q for word in ["hypertension", "tăng huyết áp"]):
             return (
-                "Hypertension is commonly associated with persistently elevated blood "
-                "pressure. The application estimates hypertension risk from several "
-                "features, including blood pressure and other health indicators."
+                "Tăng huyết áp thường gắn với tình trạng huyết áp cao kéo dài. "
+                "Ứng dụng ước tính nguy cơ tăng huyết áp từ nhiều chỉ số, trong đó "
+                "có huyết áp và các chỉ số sức khỏe khác."
             )
 
         if any(word in q for word in ["cardiovascular", "tim mạch", "heart disease"]):
             return (
-                "Cardiovascular risk can be associated with multiple factors, including "
-                "age, blood pressure, weight, smoking, cholesterol, and activity. In this "
-                "project, the cardiovascular model combines its input features to produce "
-                "a risk estimate."
+                "Nguy cơ tim mạch liên quan tới nhiều yếu tố: tuổi, huyết áp, cân "
+                "nặng, hút thuốc, cholesterol và mức vận động. Trong dự án này, mô "
+                "hình tim mạch kết hợp các đặc trưng đầu vào để đưa ra ước tính "
+                "nguy cơ."
             )
 
         if any(word in q for word in ["ai", "model", "machine learning","ml", "mô hình"]):
             return (
-                "This application uses separate machine-learning models for cardiovascular "
-                "disease, diabetes, and hypertension. Their outputs are passed to the "
-                "Decision Engine, which assigns risk levels. The system is designed for "
-                "screening and decision support rather than diagnosis."
+                "Ứng dụng dùng ba mô hình học máy riêng cho bệnh tim mạch, đái tháo "
+                "đường và tăng huyết áp. Kết quả của chúng được đưa sang Decision "
+                "Engine để xếp mức nguy cơ. Hệ thống phục vụ sàng lọc và hỗ trợ "
+                "quyết định, không phải để chẩn đoán."
             )
 
         return (
-            "I can help explain general health concepts, the meaning of the risk "
-            "assessment, and how this AI system works. I cannot provide a diagnosis, "
-            "prescription, medication dosage, or individualized treatment plan."
+            "Tôi có thể giải thích các khái niệm sức khỏe cơ bản, ý nghĩa của kết "
+            "quả đánh giá nguy cơ và cách hệ thống AI này hoạt động. Tôi không "
+            "chẩn đoán, không kê đơn, không đưa ra liều thuốc hay phác đồ điều "
+            "trị cá nhân."
         )
 
-    st.markdown("### 💡 Quick Questions")
+    st.markdown("### 💡 Câu hỏi nhanh")
     quick_questions = [
-        "What does my current result mean?",
-        "Why is my overall risk HIGH?",
-        "Which disease has the highest risk?",
-        "Why is my cardiovascular risk high?",
-        "Why is my hypertension risk high?",
-        "Why is my diabetes risk high?",
-        "Does 70% risk mean I definitely have the disease?",
-        "What factors affect the AI prediction?",
-        "How does the AI make predictions?",
-        "What is SHAP?",
-        "What is high blood pressure?",
-        "What is BMI?",
+        "Kết quả hiện tại của tôi có ý nghĩa gì?",
+        "Vì sao nguy cơ tổng thể của tôi ở mức CAO?",
+        "Bệnh nào đang có nguy cơ cao nhất?",
+        "Vì sao nguy cơ tim mạch của tôi cao?",
+        "Vì sao nguy cơ tăng huyết áp của tôi cao?",
+        "Vì sao nguy cơ đái tháo đường của tôi cao?",
+        "Nguy cơ 70% có nghĩa là chắc chắn mắc bệnh không?",
+        "Những yếu tố nào ảnh hưởng tới dự đoán của AI?",
+        "AI đưa ra dự đoán bằng cách nào?",
+        "SHAP là gì?",
+        "Huyết áp cao là gì?",
+        "BMI là gì?",
     ]
 
     # Keep the selected Quick Question across Streamlit reruns.
@@ -1724,13 +1766,13 @@ if st.session_state.get("assessment") is not None:
     # Manual question input.
     # A manually typed question is NOT auto-submitted.
     question = st.text_input(
-        "Your question",
+        "Câu hỏi của bạn",
         key="ask_ai_question",
-        placeholder="Example: Why is my cardiovascular risk high?"
+        placeholder="Ví dụ: Vì sao nguy cơ tim mạch của tôi cao?"
     )
 
     # Manual questions require clicking ASK AI.
-    ask_button = st.button("🤖 ASK AI", type="secondary")
+    ask_button = st.button("🤖 HỎI AI", type="secondary")
 
     # Only Quick Questions use auto-submit.
     should_answer = (
@@ -1742,15 +1784,15 @@ if st.session_state.get("assessment") is not None:
         current_assessment = st.session_state.get("assessment")
         answer = ask_ai_local(question, current_assessment)
 
-        st.markdown("### 💬 AI Response")
+        st.markdown("### 💬 Trả lời của AI")
         st.info(answer)
 
         # Reset auto-submit so typing a new question requires ASK AI.
         st.session_state["ask_ai_auto_submit"] = False
 
     st.caption(
-        "AI Health Information Assistant — educational prototype. "
-        "It does not diagnose, prescribe, or replace healthcare professionals."
+        "Trợ lý thông tin sức khỏe AI — bản thử nghiệm phục vụ học tập. "
+        "Không chẩn đoán, không kê đơn và không thay thế nhân viên y tế."
     )
 
     # ========================================================
@@ -1763,9 +1805,8 @@ if st.session_state.get("assessment") is not None:
         recommendations.get(
             "disclaimer",
             (
-                "These results are AI-generated "
-                "risk estimates and are not medical "
-                "diagnoses."
+                "Đây là ước tính nguy cơ do AI đưa ra, "
+                "không phải chẩn đoán y khoa."
             )
         )
     )
@@ -1777,11 +1818,11 @@ if st.session_state.get("assessment") is not None:
 
 st.divider()
 
-st.header("📈 Patient Records")
+st.header("📈 Hồ sơ bệnh nhân")
 
 record_tabs = st.tabs([
-    "👥 Patient list",
-    "📊 Measurement history"
+    "👥 Danh sách bệnh nhân",
+    "📊 Lịch sử đo"
 ])
 
 with record_tabs[0]:
@@ -1791,26 +1832,26 @@ with record_tabs[0]:
     if not all_patients:
 
         st.info(
-            "No patient has been saved yet. Use the sidebar to "
-            "add the first patient."
+            "Chưa lưu bệnh nhân nào. Dùng thanh bên để "
+            "thêm bệnh nhân đầu tiên."
         )
 
     else:
 
         st.caption(
-            f"{len(all_patients)} patient(s) saved."
+            f"Đã lưu {len(all_patients)} bệnh nhân."
         )
 
         patient_table = pd.DataFrame([
             {
-                "Name": patient["name"],
-                "Gender": patient["gender"] or "-",
-                "Birth year": patient["birth_year"] or "-",
-                "Measurements": patient["measurement_count"],
-                "Last measured": (
+                "Họ tên": patient["name"],
+                "Giới tính": patient["gender"] or "-",
+                "Năm sinh": patient["birth_year"] or "-",
+                "Số lần đo": patient["measurement_count"],
+                "Lần đo gần nhất": (
                     patient["last_measured_at"] or "-"
                 ),
-                "Note": patient["note"] or "",
+                "Ghi chú": patient["note"] or "",
             }
             for patient in all_patients
         ])
@@ -1830,8 +1871,8 @@ with record_tabs[1]:
     if selected_patient_id is None:
 
         st.info(
-            "Select a patient in the sidebar to see their "
-            "measurement history."
+            "Chọn một bệnh nhân ở thanh bên để xem "
+            "lịch sử đo của họ."
         )
 
     else:
@@ -1845,14 +1886,14 @@ with record_tabs[1]:
         )
 
         st.subheader(
-            f"History — {selected_patient['name']}"
+            f"Lịch sử đo — {selected_patient['name']}"
         )
 
         if not measurements:
 
             st.info(
-                "This patient has no stored measurement yet. Run "
-                "an assessment and use 'Save this measurement'."
+                "Bệnh nhân này chưa có lần đo nào. Hãy chạy "
+                "đánh giá rồi bấm 'Lưu lần đo này'."
             )
 
         else:
@@ -1895,34 +1936,34 @@ with record_tabs[1]:
             metric_columns = st.columns(4)
 
             metric_columns[0].metric(
-                "Blood pressure",
+                "Huyết áp",
                 f"{latest['systolic_bp']:.0f}/"
                 f"{latest['diastolic_bp']:.0f}",
                 delta=delta_of("systolic_bp")
             )
 
             metric_columns[1].metric(
-                "Glucose",
+                "Đường huyết",
                 f"{latest['glucose']:.0f}",
                 delta=delta_of("glucose")
             )
 
             metric_columns[2].metric(
-                "Weight (kg)",
+                "Cân nặng (kg)",
                 f"{latest['weight']:.1f}",
                 delta=delta_of("weight")
             )
 
             metric_columns[3].metric(
-                "Overall risk",
-                latest["overall_risk"] or "N/A"
+                "Nguy cơ tổng thể",
+                risk_level_vi(latest["overall_risk"] or "N/A")
             )
 
             st.caption(
-                f"{len(history)} measurement(s) recorded between "
-                f"{history['measured_at'].min():%Y-%m-%d %H:%M} "
-                f"and "
-                f"{history['measured_at'].max():%Y-%m-%d %H:%M}."
+                f"{len(history)} lần đo, từ "
+                f"{history['measured_at'].min():%d/%m/%Y %H:%M} "
+                f"đến "
+                f"{history['measured_at'].max():%d/%m/%Y %H:%M}."
             )
 
             # ------------------------------------------------
@@ -1931,12 +1972,12 @@ with record_tabs[1]:
 
             chart_data = history.set_index("measured_at")
 
-            st.markdown("#### Blood pressure trend")
+            st.markdown("#### Xu hướng huyết áp")
             st.line_chart(
                 chart_data[["systolic_bp", "diastolic_bp"]]
             )
 
-            st.markdown("#### Glucose, weight and heart rate")
+            st.markdown("#### Đường huyết, cân nặng và nhịp tim")
             st.line_chart(
                 chart_data[["glucose", "weight", "heart_rate"]]
             )
@@ -1949,14 +1990,14 @@ with record_tabs[1]:
 
             if chart_data[risk_columns].notna().any().any():
 
-                st.markdown("#### Predicted risk over time")
+                st.markdown("#### Nguy cơ dự đoán theo thời gian")
                 st.line_chart(chart_data[risk_columns])
 
             # ------------------------------------------------
             # Full table
             # ------------------------------------------------
 
-            st.markdown("#### All measurements")
+            st.markdown("#### Toàn bộ các lần đo")
 
             st.dataframe(
                 history.drop(columns=["id"]),
@@ -1965,10 +2006,10 @@ with record_tabs[1]:
             )
 
             st.download_button(
-                "⬇️ Download history (CSV)",
+                "⬇️ Tải lịch sử (CSV)",
                 data=history.to_csv(index=False).encode("utf-8"),
                 file_name=(
-                    f"measurements_{selected_patient['name']}.csv"
+                    f"lich_su_do_{selected_patient['name']}.csv"
                 ),
                 mime="text/csv"
             )
@@ -1977,10 +2018,10 @@ with record_tabs[1]:
             # Delete a single measurement
             # ------------------------------------------------
 
-            with st.expander("🗑️ Delete a measurement"):
+            with st.expander("🗑️ Xoá một lần đo"):
 
                 measurement_choice = st.selectbox(
-                    "Measurement",
+                    "Lần đo",
                     options=[
                         item["id"] for item in measurements
                     ],
@@ -1991,7 +2032,7 @@ with record_tabs[1]:
                     )
                 )
 
-                if st.button("Delete measurement"):
+                if st.button("Xoá lần đo"):
 
                     patient_records.delete_measurement(
                         measurement_choice
@@ -2007,6 +2048,6 @@ with record_tabs[1]:
 st.divider()
 
 st.caption(
-    "AI Healthcare Assistant | "
-    "Prediction + Decision + Recommendation Pipeline"
+    "Trợ lý Sức khỏe AI | "
+    "Quy trình: Dự đoán → Quyết định → Khuyến nghị"
 )
