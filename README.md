@@ -89,3 +89,34 @@ The system follows a multi-model architecture combined with a Decision Engine.
     render_trustworthy_ai_dashboard(PROJECT_ROOT)
 
 
+
+## Patient records & measurement tracking
+
+The Streamlit UI stores patients and their repeated measurements in a local
+SQLite database (`data/patient_records.db`, created automatically).
+
+- **Sidebar → 👥 Patients**: add a patient, switch between patients, delete a
+  patient (removes their measurements as well).
+- **📊 Assessment Results → 💾 Save this measurement**: stores the current
+  vitals (BP, glucose, weight, BMI, heart rate, cholesterol) together with the
+  predicted probabilities and the overall risk level for the selected patient.
+- **📈 Patient Records**:
+  - *👥 Patient list*: every saved patient with the number of measurements and
+    the date of the last one.
+  - *📊 Measurement history*: latest values with the change since the previous
+    visit, trend charts (blood pressure, glucose/weight/heart rate, predicted
+    risk), the full measurement table, a CSV export, and per-measurement delete.
+
+Storage API: `src/storage/patient_records.py`.
+
+### Section visibility
+
+`src/ui/app.py` defines two flags near the top:
+
+```python
+SHOW_TRUSTWORTHY_AI = False
+SHOW_DEFENSE_QA = False
+```
+
+They hide the "🤖 Trustworthy AI" dashboard and the "❓ Defense Questions &
+Answers" section. Set either to `True` to show that section again.

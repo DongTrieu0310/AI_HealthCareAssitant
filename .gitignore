@@ -1,0 +1,8 @@
+# Patient records database (local runtime data)
+data/patient_records.db
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/

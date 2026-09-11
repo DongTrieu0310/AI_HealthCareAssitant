@@ -26,6 +26,7 @@ Final Assessment
 import sys
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 
@@ -48,6 +49,8 @@ from application.healthcare_assistant import (
     HealthcareAssistant
 )
 
+from storage import patient_records
+
 
 # ============================================================
 # 4. PAGE CONFIGURATION
@@ -62,6 +65,142 @@ st.set_page_config(
 # Keep only the latest completed assessment.
 if "assessment" not in st.session_state:
     st.session_state["assessment"] = None
+
+
+# ============================================================
+# 4.1 SECTION VISIBILITY FLAGS
+# ============================================================
+
+# Set to True to show these sections again in the UI.
+SHOW_TRUSTWORTHY_AI = False
+SHOW_DEFENSE_QA = False
+
+
+# ============================================================
+# 4.2 PATIENT RECORDS (SIDEBAR)
+# ============================================================
+
+patient_records.init_db()
+
+if "selected_patient_id" not in st.session_state:
+    st.session_state["selected_patient_id"] = None
+
+saved_patients = patient_records.list_patients()
+
+with st.sidebar:
+
+    st.header("👥 Patients")
+
+    if saved_patients:
+
+        patient_ids = [
+            patient["id"] for patient in saved_patients
+        ]
+
+        patient_labels = {
+            patient["id"]: (
+                f"{patient['name']} "
+                f"({patient['measurement_count']} measurements)"
+            )
+            for patient in saved_patients
+        }
+
+        current_id = st.session_state["selected_patient_id"]
+
+        default_index = (
+            patient_ids.index(current_id)
+            if current_id in patient_ids
+            else 0
+        )
+
+        st.session_state["selected_patient_id"] = st.selectbox(
+            "Selected patient",
+            options=patient_ids,
+            index=default_index,
+            format_func=lambda pid: patient_labels[pid]
+        )
+
+    else:
+
+        st.session_state["selected_patient_id"] = None
+
+        st.info(
+            "No patient saved yet. Add a patient to start "
+            "tracking measurements over time."
+        )
+
+    with st.expander("➕ Add new patient"):
+
+        new_patient_name = st.text_input(
+            "Full name",
+            key="new_patient_name"
+        )
+
+        new_patient_gender = st.selectbox(
+            "Gender",
+            options=["", "Female", "Male"],
+            key="new_patient_gender"
+        )
+
+        new_patient_birth_year = st.number_input(
+            "Birth year",
+            min_value=1900,
+            max_value=2100,
+            value=1970,
+            key="new_patient_birth_year"
+        )
+
+        new_patient_note = st.text_input(
+            "Note (optional)",
+            key="new_patient_note"
+        )
+
+        if st.button("Save patient", use_container_width=True):
+
+            try:
+
+                new_id = patient_records.add_patient(
+                    name=new_patient_name,
+                    gender=new_patient_gender or None,
+                    birth_year=int(new_patient_birth_year),
+                    note=new_patient_note or None
+                )
+
+                st.session_state["selected_patient_id"] = new_id
+
+                st.success(
+                    f"Patient '{new_patient_name}' saved."
+                )
+
+                st.rerun()
+
+            except ValueError as error:
+
+                st.error(str(error))
+
+    selected_patient_id = st.session_state["selected_patient_id"]
+
+    if selected_patient_id is not None:
+
+        with st.expander("🗑️ Delete selected patient"):
+
+            st.warning(
+                "Deleting a patient also removes all of their "
+                "stored measurements."
+            )
+
+            if st.button(
+                "Delete patient",
+                use_container_width=True
+            ):
+
+                patient_records.delete_patient(
+                    selected_patient_id
+                )
+
+                st.session_state["selected_patient_id"] = None
+
+                st.rerun()
 
 
 # ============================================================
@@ -933,398 +1072,473 @@ if st.session_state.get("assessment") is not None:
             )
 
     # ========================================================
-    # TRUSTWORTHY AI DASHBOARD
+    # SAVE MEASUREMENT
     # ========================================================
 
     st.divider()
-    st.header("🤖 Trustworthy AI")
 
-    st.markdown(
-        """
-        This section presents the Trustworthy AI evaluation of the
-        healthcare risk-assessment system. The evaluation covers
-        fairness, robustness, explainability, bias, privacy,
-        accountability, social impact, and mathematical foundations.
-        """
+    st.subheader("💾 Save this measurement")
+
+    selected_patient_id = st.session_state.get(
+        "selected_patient_id"
     )
 
-    ta_tabs = st.tabs([
-        "📋 Overview",
-        "🔍 Explainability & SHAP",
-        "⚖️ Fairness & Bias",
-        "🛡️ Robustness",
-        "🔐 Privacy",
-        "📋 Accountability",
-        "🌍 Social Impact",
-        "🧮 Math AI"
-    ])
-
-    # ------------------------------------------------------------
-    # Overview
-    # ------------------------------------------------------------
-    with ta_tabs[0]:
-
-        st.subheader("Trustworthy AI Evaluation Status")
-
-        overview_items = [
-            ("⚖️ Fairness", "Evaluated"),
-            ("🛡️ Robustness", "Evaluated"),
-            ("🔍 Explainability", "Evaluated"),
-            ("📊 Bias Analysis", "Evaluated"),
-            ("🔐 Privacy", "Evaluated"),
-            ("📋 Accountability", "Evaluated"),
-            ("🌍 Social Impact", "Evaluated"),
-            ("🧮 Math AI", "Evaluated"),
-        ]
-
-        overview_cols = st.columns(4)
-
-        for i, (name, status) in enumerate(overview_items):
-            with overview_cols[i % 4]:
-                st.metric(name, status)
+    if selected_patient_id is None:
 
         st.info(
-            "Trustworthy AI evaluation is intended to support "
-            "responsible use of the system. It does not guarantee "
-            "that every prediction is correct or free from bias."
+            "Select or add a patient in the sidebar to save this "
+            "assessment and follow the patient over time."
         )
 
-        st.subheader("Known Evaluation Limitations")
+    else:
 
-        limitations = [
-            "Performance can differ between demographic groups.",
-            "Model performance can decrease when input noise is introduced.",
-            "False-positive and false-negative predictions remain possible.",
-            "Healthcare data contains sensitive information.",
-            "The CARDIO dataset contains a direct identifier.",
-            "Human oversight is required for medical decisions.",
-            "Production monitoring and audit logging are not yet implemented."
-        ]
+        selected_patient = patient_records.get_patient(
+            selected_patient_id
+        )
 
-        for item in limitations:
-            st.write(f"• {item}")
+        measurement_note = st.text_input(
+            "Note for this measurement (optional)",
+            key="measurement_note"
+        )
 
-    # ------------------------------------------------------------
-    # Explainability & SHAP
-    # ------------------------------------------------------------
-    with ta_tabs[1]:
+        if st.button(
+            f"💾 Save measurement for {selected_patient['name']}",
+            use_container_width=True
+        ):
 
-        st.subheader("🔍 Model Explainability")
+            measurement_values = {
+                "age": int(age),
+                "height": float(height),
+                "weight": float(weight),
+                "bmi": float(bmi),
+                "systolic_bp": float(ap_hi),
+                "diastolic_bp": float(ap_lo),
+                "heart_rate": float(heart_rate),
+                "glucose": float(glucose),
+                "total_cholesterol": float(total_chol),
+                "cardio_probability": prediction.get(
+                    "cardio", {}
+                ).get("probability"),
+                "diabetes_probability": prediction.get(
+                    "diabetes", {}
+                ).get("probability"),
+                "hypertension_probability": prediction.get(
+                    "hypertension", {}
+                ).get("probability"),
+                "overall_risk": decision.get("overall_risk"),
+                "priority_disease": decision.get(
+                    "priority_disease"
+                ),
+                "note": measurement_note or None,
+            }
 
-        explainability = {
-            "Cardiovascular Disease": ("ap_hi", 0.145809),
-            "Diabetes": ("SkinThickness", 0.134053),
-            "Hypertension": ("sysBP", 0.200924),
-        }
-
-        for disease, (feature, importance) in explainability.items():
-            with st.expander(disease, expanded=True):
-                st.write(
-                    f"**Most influential feature:** `{feature}`"
-                )
-                st.write(
-                    f"**Mean absolute SHAP value:** {importance:.6f}"
-                )
-
-        st.markdown("---")
-        st.subheader("SHAP Visualizations")
-
-        xai_dir = PROJECT_ROOT / "data" / "models" / "xai"
-
-        image_groups = {
-            "Cardiovascular Disease": ["cardio"],
-            "Diabetes": ["diabetes"],
-            "Hypertension": ["hypertension"],
-        }
-
-        if xai_dir.exists():
-            for disease, keywords in image_groups.items():
-                matching_images = []
-
-                for image_path in sorted(xai_dir.glob("*.png")):
-                    name_lower = image_path.name.lower()
-
-                    if any(keyword in name_lower for keyword in keywords):
-                        matching_images.append(image_path)
-
-                if matching_images:
-                    st.write(f"**{disease}**")
-
-                    for image_path in matching_images:
-                        st.image(
-                            str(image_path),
-                            caption=image_path.name,
-                            use_container_width=True
-                        )
-        else:
-            st.info(
-                "SHAP visualization directory was not found. "
-                "The numerical explainability results are still shown above."
+            patient_records.add_measurement(
+                selected_patient_id,
+                measurement_values
             )
 
-        st.caption(
-            "SHAP values describe how input features contribute to "
-            "model predictions. They should be interpreted as model "
-            "explanations, not medical causation."
+            st.success(
+                "Measurement saved for "
+                f"{selected_patient['name']}."
+            )
+
+            st.rerun()
+
+    # ========================================================
+    # TRUSTWORTHY AI DASHBOARD
+    # ========================================================
+
+    if SHOW_TRUSTWORTHY_AI:
+        st.divider()
+        st.header("🤖 Trustworthy AI")
+
+        st.markdown(
+            """
+            This section presents the Trustworthy AI evaluation of the
+            healthcare risk-assessment system. The evaluation covers
+            fairness, robustness, explainability, bias, privacy,
+            accountability, social impact, and mathematical foundations.
+            """
         )
 
-    # ------------------------------------------------------------
-    # Fairness & Bias
-    # ------------------------------------------------------------
-    with ta_tabs[2]:
+        ta_tabs = st.tabs([
+            "📋 Overview",
+            "🔍 Explainability & SHAP",
+            "⚖️ Fairness & Bias",
+            "🛡️ Robustness",
+            "🔐 Privacy",
+            "📋 Accountability",
+            "🌍 Social Impact",
+            "🧮 Math AI"
+        ])
 
-        st.subheader("⚖️ Fairness")
+        # ------------------------------------------------------------
+        # Overview
+        # ------------------------------------------------------------
+        with ta_tabs[0]:
 
-        st.write(
-            "Fairness analysis compares model performance across "
-            "different demographic groups using Accuracy, Precision, "
-            "Recall, and F1-score."
-        )
+            st.subheader("Trustworthy AI Evaluation Status")
 
-        fairness_metrics = [
-            "Accuracy",
-            "Precision",
-            "Recall",
-            "F1-score"
-        ]
-
-        for metric in fairness_metrics:
-            st.write(f"• {metric}: evaluated across groups")
-
-        st.warning(
-            "Observed performance differences between groups should "
-            "be monitored. A performance disparity alone should not "
-            "automatically be interpreted as proof of discriminatory bias."
-        )
-
-        st.subheader("📊 Bias Analysis")
-
-        st.write(
-            "Bias analysis is used to identify performance disparities "
-            "and potential sources of systematic differences."
-        )
-
-        st.success("Bias analysis completed.")
-
-        st.caption(
-            "The current prototype focuses on evaluation and monitoring. "
-            "It does not claim that the models are completely bias-free."
-        )
-
-    # ------------------------------------------------------------
-    # Robustness
-    # ------------------------------------------------------------
-    with ta_tabs[3]:
-
-        st.subheader("🛡️ Robustness Evaluation")
-
-        st.write(
-            "Robustness testing evaluates whether model performance "
-            "remains stable when perturbations or noise are introduced "
-            "into the input data."
-        )
-
-        st.code(
-            """Original input
-      ↓
-Add perturbation / noise
-      ↓
-Run model
-      ↓
-Compare predictions
-      ↓
-Measure performance degradation""",
-            language="text"
-        )
-
-        st.warning(
-            "The evaluation shows that model performance can decrease "
-            "when input noise is introduced. Therefore, predictions "
-            "should be interpreted with appropriate caution."
-        )
-
-        st.success("Robustness analysis completed.")
-
-    # ------------------------------------------------------------
-    # Privacy
-    # ------------------------------------------------------------
-    with ta_tabs[4]:
-
-        st.subheader("🔐 Privacy")
-
-        st.write(
-            "The privacy analysis checks the healthcare datasets for "
-            "direct identifiers and highlights the presence of "
-            "sensitive health information."
-        )
-
-        privacy_items = [
-            ("Healthcare data", "Sensitive health information present"),
-            ("CARDIO dataset", "Direct identifier detected in source data"),
-            ("System purpose", "Risk estimation / decision support"),
-        ]
-
-        for item, result in privacy_items:
-            st.write(f"**{item}:** {result}")
-
-        st.warning(
-            "The CARDIO source dataset contains a direct identifier. "
-            "Such identifiers should not be exposed in a production "
-            "deployment and should be removed or protected."
-        )
-
-        st.success("Privacy analysis completed.")
-
-    # ------------------------------------------------------------
-    # Accountability
-    # ------------------------------------------------------------
-    with ta_tabs[5]:
-
-        st.subheader("📋 Accountability")
-
-        accountability_items = [
-            "The system identifies the three disease-specific models.",
-            "Prediction results are passed through a Decision Engine.",
-            "Risk levels are explicitly classified as LOW, MODERATE, or HIGH.",
-            "Recommendations are separated from medical diagnosis.",
-            "The system includes a medical-use disclaimer.",
-            "Human healthcare professionals remain responsible for final decisions."
-        ]
-
-        for item in accountability_items:
-            st.write(f"✅ {item}")
-
-        st.info(
-            "The AI system is designed as a decision-support prototype "
-            "and should not replace qualified healthcare professionals."
-        )
-
-    # ------------------------------------------------------------
-    # Social Impact
-    # ------------------------------------------------------------
-    with ta_tabs[6]:
-
-        st.subheader("🌍 Social Impact")
-
-        col_positive, col_negative = st.columns(2)
-
-        with col_positive:
-            st.markdown("### Potential Positive Impacts")
-
-            positive = [
-                "Support early risk screening.",
-                "Help users monitor important health indicators.",
-                "Provide accessible AI-assisted risk estimation.",
-                "Support healthcare professionals with additional information."
+            overview_items = [
+                ("⚖️ Fairness", "Evaluated"),
+                ("🛡️ Robustness", "Evaluated"),
+                ("🔍 Explainability", "Evaluated"),
+                ("📊 Bias Analysis", "Evaluated"),
+                ("🔐 Privacy", "Evaluated"),
+                ("📋 Accountability", "Evaluated"),
+                ("🌍 Social Impact", "Evaluated"),
+                ("🧮 Math AI", "Evaluated"),
             ]
 
-            for item in positive:
-                st.write(f"🟢 {item}")
+            overview_cols = st.columns(4)
 
-        with col_negative:
-            st.markdown("### Potential Negative Impacts")
+            for i, (name, status) in enumerate(overview_items):
+                with overview_cols[i % 4]:
+                    st.metric(name, status)
 
-            negative = [
-                "False-positive predictions may cause unnecessary concern.",
-                "False-negative predictions may create false reassurance.",
-                "Users may rely too heavily on AI-generated results.",
-                "Bias or performance differences may affect some groups."
+            st.info(
+                "Trustworthy AI evaluation is intended to support "
+                "responsible use of the system. It does not guarantee "
+                "that every prediction is correct or free from bias."
+            )
+
+            st.subheader("Known Evaluation Limitations")
+
+            limitations = [
+                "Performance can differ between demographic groups.",
+                "Model performance can decrease when input noise is introduced.",
+                "False-positive and false-negative predictions remain possible.",
+                "Healthcare data contains sensitive information.",
+                "The CARDIO dataset contains a direct identifier.",
+                "Human oversight is required for medical decisions.",
+                "Production monitoring and audit logging are not yet implemented."
             ]
 
-            for item in negative:
-                st.write(f"🔴 {item}")
+            for item in limitations:
+                st.write(f"• {item}")
 
-        st.info(
-            "Human oversight, explainability, fairness evaluation, "
-            "and clear disclaimers are important mitigation measures."
-        )
+        # ------------------------------------------------------------
+        # Explainability & SHAP
+        # ------------------------------------------------------------
+        with ta_tabs[1]:
 
-    # ------------------------------------------------------------
-    # Math AI
-    # ------------------------------------------------------------
-    with ta_tabs[7]:
+            st.subheader("🔍 Model Explainability")
 
-        st.subheader("🧮 Mathematical Foundations")
+            explainability = {
+                "Cardiovascular Disease": ("ap_hi", 0.145809),
+                "Diabetes": ("SkinThickness", 0.134053),
+                "Hypertension": ("sysBP", 0.200924),
+            }
 
-        math_items = [
-            (
-                "Calculus",
-                "Supports understanding of change, optimization, "
-                "and model-related mathematical concepts."
-            ),
-            (
-                "Linear Algebra",
-                "Provides the mathematical foundation for vectors, "
-                "matrices, and feature representations."
-            ),
-            (
-                "Advanced Linear Algebra",
-                "Supports matrix-based analysis and transformations."
-            ),
-            (
-                "Probability",
-                "Provides the foundation for probabilistic risk estimates."
-            ),
-            (
-                "Statistics",
-                "Supports descriptive statistics, variability, "
-                "correlation, and model evaluation."
-            ),
-        ]
+            for disease, (feature, importance) in explainability.items():
+                with st.expander(disease, expanded=True):
+                    st.write(
+                        f"**Most influential feature:** `{feature}`"
+                    )
+                    st.write(
+                        f"**Mean absolute SHAP value:** {importance:.6f}"
+                    )
 
-        for topic, description in math_items:
-            with st.expander(topic):
-                st.write(description)
+            st.markdown("---")
+            st.subheader("SHAP Visualizations")
 
-        st.success("Math AI evaluation completed.")
+            xai_dir = PROJECT_ROOT / "data" / "models" / "xai"
+
+            image_groups = {
+                "Cardiovascular Disease": ["cardio"],
+                "Diabetes": ["diabetes"],
+                "Hypertension": ["hypertension"],
+            }
+
+            if xai_dir.exists():
+                for disease, keywords in image_groups.items():
+                    matching_images = []
+
+                    for image_path in sorted(xai_dir.glob("*.png")):
+                        name_lower = image_path.name.lower()
+
+                        if any(keyword in name_lower for keyword in keywords):
+                            matching_images.append(image_path)
+
+                    if matching_images:
+                        st.write(f"**{disease}**")
+
+                        for image_path in matching_images:
+                            st.image(
+                                str(image_path),
+                                caption=image_path.name,
+                                use_container_width=True
+                            )
+            else:
+                st.info(
+                    "SHAP visualization directory was not found. "
+                    "The numerical explainability results are still shown above."
+                )
+
+            st.caption(
+                "SHAP values describe how input features contribute to "
+                "model predictions. They should be interpreted as model "
+                "explanations, not medical causation."
+            )
+
+        # ------------------------------------------------------------
+        # Fairness & Bias
+        # ------------------------------------------------------------
+        with ta_tabs[2]:
+
+            st.subheader("⚖️ Fairness")
+
+            st.write(
+                "Fairness analysis compares model performance across "
+                "different demographic groups using Accuracy, Precision, "
+                "Recall, and F1-score."
+            )
+
+            fairness_metrics = [
+                "Accuracy",
+                "Precision",
+                "Recall",
+                "F1-score"
+            ]
+
+            for metric in fairness_metrics:
+                st.write(f"• {metric}: evaluated across groups")
+
+            st.warning(
+                "Observed performance differences between groups should "
+                "be monitored. A performance disparity alone should not "
+                "automatically be interpreted as proof of discriminatory bias."
+            )
+
+            st.subheader("📊 Bias Analysis")
+
+            st.write(
+                "Bias analysis is used to identify performance disparities "
+                "and potential sources of systematic differences."
+            )
+
+            st.success("Bias analysis completed.")
+
+            st.caption(
+                "The current prototype focuses on evaluation and monitoring. "
+                "It does not claim that the models are completely bias-free."
+            )
+
+        # ------------------------------------------------------------
+        # Robustness
+        # ------------------------------------------------------------
+        with ta_tabs[3]:
+
+            st.subheader("🛡️ Robustness Evaluation")
+
+            st.write(
+                "Robustness testing evaluates whether model performance "
+                "remains stable when perturbations or noise are introduced "
+                "into the input data."
+            )
+
+            st.code(
+                """Original input
+          ↓
+    Add perturbation / noise
+          ↓
+    Run model
+          ↓
+    Compare predictions
+          ↓
+    Measure performance degradation""",
+                language="text"
+            )
+
+            st.warning(
+                "The evaluation shows that model performance can decrease "
+                "when input noise is introduced. Therefore, predictions "
+                "should be interpreted with appropriate caution."
+            )
+
+            st.success("Robustness analysis completed.")
+
+        # ------------------------------------------------------------
+        # Privacy
+        # ------------------------------------------------------------
+        with ta_tabs[4]:
+
+            st.subheader("🔐 Privacy")
+
+            st.write(
+                "The privacy analysis checks the healthcare datasets for "
+                "direct identifiers and highlights the presence of "
+                "sensitive health information."
+            )
+
+            privacy_items = [
+                ("Healthcare data", "Sensitive health information present"),
+                ("CARDIO dataset", "Direct identifier detected in source data"),
+                ("System purpose", "Risk estimation / decision support"),
+            ]
+
+            for item, result in privacy_items:
+                st.write(f"**{item}:** {result}")
+
+            st.warning(
+                "The CARDIO source dataset contains a direct identifier. "
+                "Such identifiers should not be exposed in a production "
+                "deployment and should be removed or protected."
+            )
+
+            st.success("Privacy analysis completed.")
+
+        # ------------------------------------------------------------
+        # Accountability
+        # ------------------------------------------------------------
+        with ta_tabs[5]:
+
+            st.subheader("📋 Accountability")
+
+            accountability_items = [
+                "The system identifies the three disease-specific models.",
+                "Prediction results are passed through a Decision Engine.",
+                "Risk levels are explicitly classified as LOW, MODERATE, or HIGH.",
+                "Recommendations are separated from medical diagnosis.",
+                "The system includes a medical-use disclaimer.",
+                "Human healthcare professionals remain responsible for final decisions."
+            ]
+
+            for item in accountability_items:
+                st.write(f"✅ {item}")
+
+            st.info(
+                "The AI system is designed as a decision-support prototype "
+                "and should not replace qualified healthcare professionals."
+            )
+
+        # ------------------------------------------------------------
+        # Social Impact
+        # ------------------------------------------------------------
+        with ta_tabs[6]:
+
+            st.subheader("🌍 Social Impact")
+
+            col_positive, col_negative = st.columns(2)
+
+            with col_positive:
+                st.markdown("### Potential Positive Impacts")
+
+                positive = [
+                    "Support early risk screening.",
+                    "Help users monitor important health indicators.",
+                    "Provide accessible AI-assisted risk estimation.",
+                    "Support healthcare professionals with additional information."
+                ]
+
+                for item in positive:
+                    st.write(f"🟢 {item}")
+
+            with col_negative:
+                st.markdown("### Potential Negative Impacts")
+
+                negative = [
+                    "False-positive predictions may cause unnecessary concern.",
+                    "False-negative predictions may create false reassurance.",
+                    "Users may rely too heavily on AI-generated results.",
+                    "Bias or performance differences may affect some groups."
+                ]
+
+                for item in negative:
+                    st.write(f"🔴 {item}")
+
+            st.info(
+                "Human oversight, explainability, fairness evaluation, "
+                "and clear disclaimers are important mitigation measures."
+            )
+
+        # ------------------------------------------------------------
+        # Math AI
+        # ------------------------------------------------------------
+        with ta_tabs[7]:
+
+            st.subheader("🧮 Mathematical Foundations")
+
+            math_items = [
+                (
+                    "Calculus",
+                    "Supports understanding of change, optimization, "
+                    "and model-related mathematical concepts."
+                ),
+                (
+                    "Linear Algebra",
+                    "Provides the mathematical foundation for vectors, "
+                    "matrices, and feature representations."
+                ),
+                (
+                    "Advanced Linear Algebra",
+                    "Supports matrix-based analysis and transformations."
+                ),
+                (
+                    "Probability",
+                    "Provides the foundation for probabilistic risk estimates."
+                ),
+                (
+                    "Statistics",
+                    "Supports descriptive statistics, variability, "
+                    "correlation, and model evaluation."
+                ),
+            ]
+
+            for topic, description in math_items:
+                with st.expander(topic):
+                    st.write(description)
+
+            st.success("Math AI evaluation completed.")
 
     # ========================================================
     # DEFENSE / Q&A
     # ========================================================
-    st.divider()
-    st.header("❓ Defense Questions & Answers")
-    st.markdown(
-        "Use these questions to explain the safety, limitations, and responsible-use design of the system during a project demonstration or defense."
-    )
+    if SHOW_DEFENSE_QA:
+        st.divider()
+        st.header("❓ Defense Questions & Answers")
+        st.markdown(
+            "Use these questions to explain the safety, limitations, and responsible-use design of the system during a project demonstration or defense."
+        )
 
-    defense_questions = [
-        (
-            "Vì sao không để AI/LLM tự chẩn đoán cho bệnh nhân?",
-            "Hệ thống được thiết kế để đánh giá rủi ro và hỗ trợ quyết định, không thay thế chẩn đoán lâm sàng. Mô hình ML cung cấp risk estimate, Decision Engine phân loại mức rủi ro, còn quyết định y khoa cuối cùng thuộc về nhân viên y tế."
-        ),
-        (
-            "Probability 80% có nghĩa là bệnh nhân chắc chắn mắc bệnh 80% không?",
-            "Không. Đây là xác suất dự đoán của mô hình trên dữ liệu đầu vào, không phải xác suất chẩn đoán lâm sàng. Kết quả cần được hiểu như một risk estimate và phải kết hợp với đánh giá của chuyên gia y tế."
-        ),
-        (
-            "Làm sao tránh người dùng tự điều trị dựa trên kết quả AI?",
-            "Ứng dụng hiển thị disclaimer, chỉ đưa ra khuyến nghị sức khỏe chung, không kê đơn và không đưa ra chẩn đoán. Hệ thống nhấn mạnh human oversight và khuyến nghị người dùng trao đổi với healthcare professional."
-        ),
-        (
-            "Dữ liệu có bias không?",
-            "Hệ thống có thực hiện Bias Analysis và Fairness Evaluation để phát hiện sự khác biệt về hiệu năng giữa các nhóm. Nếu có disparity, điều đó cần được theo dõi và phân tích thêm; không nên tự động kết luận rằng disparity đồng nghĩa với discriminatory bias."
-        ),
-        (
-            "Nếu hệ thống AI dự đoán sai thì ai chịu trách nhiệm?",
-            "Hệ thống được định vị là decision-support prototype. AI không thay thế con người; quyết định y khoa cuối cùng phải do healthcare professional đưa ra. Đây là nguyên tắc accountability và human-in-the-loop của hệ thống."
-        ),
-        (
-            "Người lớn tuổi khó sử dụng máy tính thì sao?",
-            "Giao diện được thiết kế đơn giản, chia nhóm thông tin, dùng nhãn dễ hiểu và nút đánh giá rõ ràng. Đây là một phần của Social Impact và Accessibility. Trong tương lai có thể bổ sung voice interaction hoặc hỗ trợ người thân/nhân viên y tế nhập dữ liệu."
-        ),
-        (
-            "App có kê đơn thuốc hoặc đưa ra phác đồ điều trị không?",
-            "Không. Ứng dụng chỉ cung cấp risk estimation và các khuyến nghị sức khỏe chung như theo dõi chỉ số, duy trì chế độ ăn và vận động phù hợp. Không có chức năng kê đơn hay thay thế chỉ định của bác sĩ."
-        ),
-    ]
+        defense_questions = [
+            (
+                "Vì sao không để AI/LLM tự chẩn đoán cho bệnh nhân?",
+                "Hệ thống được thiết kế để đánh giá rủi ro và hỗ trợ quyết định, không thay thế chẩn đoán lâm sàng. Mô hình ML cung cấp risk estimate, Decision Engine phân loại mức rủi ro, còn quyết định y khoa cuối cùng thuộc về nhân viên y tế."
+            ),
+            (
+                "Probability 80% có nghĩa là bệnh nhân chắc chắn mắc bệnh 80% không?",
+                "Không. Đây là xác suất dự đoán của mô hình trên dữ liệu đầu vào, không phải xác suất chẩn đoán lâm sàng. Kết quả cần được hiểu như một risk estimate và phải kết hợp với đánh giá của chuyên gia y tế."
+            ),
+            (
+                "Làm sao tránh người dùng tự điều trị dựa trên kết quả AI?",
+                "Ứng dụng hiển thị disclaimer, chỉ đưa ra khuyến nghị sức khỏe chung, không kê đơn và không đưa ra chẩn đoán. Hệ thống nhấn mạnh human oversight và khuyến nghị người dùng trao đổi với healthcare professional."
+            ),
+            (
+                "Dữ liệu có bias không?",
+                "Hệ thống có thực hiện Bias Analysis và Fairness Evaluation để phát hiện sự khác biệt về hiệu năng giữa các nhóm. Nếu có disparity, điều đó cần được theo dõi và phân tích thêm; không nên tự động kết luận rằng disparity đồng nghĩa với discriminatory bias."
+            ),
+            (
+                "Nếu hệ thống AI dự đoán sai thì ai chịu trách nhiệm?",
+                "Hệ thống được định vị là decision-support prototype. AI không thay thế con người; quyết định y khoa cuối cùng phải do healthcare professional đưa ra. Đây là nguyên tắc accountability và human-in-the-loop của hệ thống."
+            ),
+            (
+                "Người lớn tuổi khó sử dụng máy tính thì sao?",
+                "Giao diện được thiết kế đơn giản, chia nhóm thông tin, dùng nhãn dễ hiểu và nút đánh giá rõ ràng. Đây là một phần của Social Impact và Accessibility. Trong tương lai có thể bổ sung voice interaction hoặc hỗ trợ người thân/nhân viên y tế nhập dữ liệu."
+            ),
+            (
+                "App có kê đơn thuốc hoặc đưa ra phác đồ điều trị không?",
+                "Không. Ứng dụng chỉ cung cấp risk estimation và các khuyến nghị sức khỏe chung như theo dõi chỉ số, duy trì chế độ ăn và vận động phù hợp. Không có chức năng kê đơn hay thay thế chỉ định của bác sĩ."
+            ),
+        ]
 
-    for question, answer in defense_questions:
-        with st.expander(f"❓ {question}"):
-            st.write(answer)
+        for question, answer in defense_questions:
+            with st.expander(f"❓ {question}"):
+                st.write(answer)
 
-    st.info(
-        "Defense principle: AI supports screening and decision support; it does not replace clinical diagnosis or medical decision-making."
-    )
+        st.info(
+            "Defense principle: AI supports screening and decision support; it does not replace clinical diagnosis or medical decision-making."
+        )
 
     # ========================================================
     # ASK AI - HEALTH INFORMATION ASSISTANT
@@ -1555,6 +1769,235 @@ Measure performance degradation""",
             )
         )
     )
+
+
+# ============================================================
+# 11.5 PATIENT LIST & MEASUREMENT HISTORY
+# ============================================================
+
+st.divider()
+
+st.header("📈 Patient Records")
+
+record_tabs = st.tabs([
+    "👥 Patient list",
+    "📊 Measurement history"
+])
+
+with record_tabs[0]:
+
+    all_patients = patient_records.list_patients()
+
+    if not all_patients:
+
+        st.info(
+            "No patient has been saved yet. Use the sidebar to "
+            "add the first patient."
+        )
+
+    else:
+
+        st.caption(
+            f"{len(all_patients)} patient(s) saved."
+        )
+
+        patient_table = pd.DataFrame([
+            {
+                "Name": patient["name"],
+                "Gender": patient["gender"] or "-",
+                "Birth year": patient["birth_year"] or "-",
+                "Measurements": patient["measurement_count"],
+                "Last measured": (
+                    patient["last_measured_at"] or "-"
+                ),
+                "Note": patient["note"] or "",
+            }
+            for patient in all_patients
+        ])
+
+        st.dataframe(
+            patient_table,
+            use_container_width=True,
+            hide_index=True
+        )
+
+with record_tabs[1]:
+
+    selected_patient_id = st.session_state.get(
+        "selected_patient_id"
+    )
+
+    if selected_patient_id is None:
+
+        st.info(
+            "Select a patient in the sidebar to see their "
+            "measurement history."
+        )
+
+    else:
+
+        selected_patient = patient_records.get_patient(
+            selected_patient_id
+        )
+
+        measurements = patient_records.list_measurements(
+            selected_patient_id
+        )
+
+        st.subheader(
+            f"History — {selected_patient['name']}"
+        )
+
+        if not measurements:
+
+            st.info(
+                "This patient has no stored measurement yet. Run "
+                "an assessment and use 'Save this measurement'."
+            )
+
+        else:
+
+            history = pd.DataFrame(measurements)
+
+            history["measured_at"] = pd.to_datetime(
+                history["measured_at"]
+            )
+
+            # ------------------------------------------------
+            # Latest values and change since previous visit
+            # ------------------------------------------------
+
+            latest = history.iloc[-1]
+
+            previous = (
+                history.iloc[-2]
+                if len(history) > 1
+                else None
+            )
+
+            def delta_of(column):
+                """Change since the previous measurement."""
+
+                if previous is None:
+                    return None
+
+                if pd.isna(latest[column]) or pd.isna(
+                    previous[column]
+                ):
+                    return None
+
+                return round(
+                    float(latest[column])
+                    - float(previous[column]),
+                    1
+                )
+
+            metric_columns = st.columns(4)
+
+            metric_columns[0].metric(
+                "Blood pressure",
+                f"{latest['systolic_bp']:.0f}/"
+                f"{latest['diastolic_bp']:.0f}",
+                delta=delta_of("systolic_bp")
+            )
+
+            metric_columns[1].metric(
+                "Glucose",
+                f"{latest['glucose']:.0f}",
+                delta=delta_of("glucose")
+            )
+
+            metric_columns[2].metric(
+                "Weight (kg)",
+                f"{latest['weight']:.1f}",
+                delta=delta_of("weight")
+            )
+
+            metric_columns[3].metric(
+                "Overall risk",
+                latest["overall_risk"] or "N/A"
+            )
+
+            st.caption(
+                f"{len(history)} measurement(s) recorded between "
+                f"{history['measured_at'].min():%Y-%m-%d %H:%M} "
+                f"and "
+                f"{history['measured_at'].max():%Y-%m-%d %H:%M}."
+            )
+
+            # ------------------------------------------------
+            # Trends
+            # ------------------------------------------------
+
+            chart_data = history.set_index("measured_at")
+
+            st.markdown("#### Blood pressure trend")
+            st.line_chart(
+                chart_data[["systolic_bp", "diastolic_bp"]]
+            )
+
+            st.markdown("#### Glucose, weight and heart rate")
+            st.line_chart(
+                chart_data[["glucose", "weight", "heart_rate"]]
+            )
+
+            risk_columns = [
+                "cardio_probability",
+                "diabetes_probability",
+                "hypertension_probability",
+            ]
+
+            if chart_data[risk_columns].notna().any().any():
+
+                st.markdown("#### Predicted risk over time")
+                st.line_chart(chart_data[risk_columns])
+
+            # ------------------------------------------------
+            # Full table
+            # ------------------------------------------------
+
+            st.markdown("#### All measurements")
+
+            st.dataframe(
+                history.drop(columns=["id"]),
+                use_container_width=True,
+                hide_index=True
+            )
+
+            st.download_button(
+                "⬇️ Download history (CSV)",
+                data=history.to_csv(index=False).encode("utf-8"),
+                file_name=(
+                    f"measurements_{selected_patient['name']}.csv"
+                ),
+                mime="text/csv"
+            )
+
+            # ------------------------------------------------
+            # Delete a single measurement
+            # ------------------------------------------------
+
+            with st.expander("🗑️ Delete a measurement"):
+
+                measurement_choice = st.selectbox(
+                    "Measurement",
+                    options=[
+                        item["id"] for item in measurements
+                    ],
+                    format_func=lambda mid: next(
+                        item["measured_at"]
+                        for item in measurements
+                        if item["id"] == mid
+                    )
+                )
+
+                if st.button("Delete measurement"):
+
+                    patient_records.delete_measurement(
+                        measurement_choice
+                    )
+
+                    st.rerun()
 
 
 # ============================================================
