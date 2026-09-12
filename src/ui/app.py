@@ -291,7 +291,7 @@ def collect_inputs():
 
             with adv2:
                 pregnancies = st.number_input(
-                    "Số lần mang thai", min_value=0, max_value=20, value=2
+                    "Số lần mang thai", min_value=0, max_value=20, value=0
                 )
                 skin_thickness = st.number_input(
                     "Độ dày nếp da (mm)",
