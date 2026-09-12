@@ -121,6 +121,24 @@ SHOW_DEFENSE_QA = False
 They hide the "🤖 Trí tuệ nhân tạo đáng tin cậy" dashboard and the
 "❓ Câu hỏi và câu trả lời bảo vệ" section. Set either to `True` to show that section again.
 
+## Cấu trúc giao diện
+
+```
+src/ui/app.py        màn hình chính: thanh bên + 3 tab (Đánh giá / Hồ sơ / Hỏi đáp)
+src/ui/theme.py      CSS dùng chung và các thành phần hiển thị (thẻ nguy cơ, huy hiệu…)
+src/ui/labels.py     nhãn tiếng Việt và màu theo mức nguy cơ
+src/ui/sections.py   phần Trustworthy AI, câu hỏi bảo vệ, trợ lý hỏi đáp
+.streamlit/config.toml  màu chủ đạo của ứng dụng
+```
+
+Form nhập liệu dùng `st.form`: ứng dụng chỉ chạy lại khi bấm nút đánh giá, nên
+không bị giật và không mất kết quả khi đang chỉnh số liệu.
+
+Các trường trùng nhau giữa ba mô hình (tuổi, giới tính, BMI, huyết áp, đường
+huyết) chỉ phải nhập một lần và được suy ra trong `build_patient()`. BMI mặc
+định tính từ chiều cao và cân nặng; muốn nhập tay thì mở mục "Chỉ số chuyên
+sâu".
+
 ## Ngôn ngữ giao diện
 
 Toàn bộ phần hiển thị của ứng dụng Streamlit (nhãn form, thông báo lỗi, kết quả
