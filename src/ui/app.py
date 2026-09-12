@@ -5,7 +5,6 @@ Bố cục:
     Thanh bên   : chọn / thêm / xoá bệnh nhân
     Tab 1       : nhập chỉ số và xem kết quả đánh giá
     Tab 2       : hồ sơ bệnh nhân và lịch sử đo
-    Tab 3       : hỏi đáp thông tin sức khỏe
 
 Luồng xử lý giữ nguyên như cũ:
     Người dùng → HealthcareAssistant → Prediction → Decision → Recommendation
@@ -71,8 +70,6 @@ patient_records.init_db()
 st.session_state.setdefault("assessment", None)
 st.session_state.setdefault("assessment_inputs", None)
 st.session_state.setdefault("selected_patient_id", None)
-st.session_state.setdefault("ask_ai_question", "")
-st.session_state.setdefault("ask_ai_auto_submit", False)
 
 
 # ============================================================
@@ -790,70 +787,7 @@ def render_records_tab(selected_patient):
 
 
 # ============================================================
-# 9. TAB HỎI ĐÁP
-# ============================================================
-
-def render_assistant_tab():
-    """Tab hỏi đáp thông tin sức khỏe."""
-
-    st.markdown("#### 💬 Hỏi đáp thông tin sức khỏe")
-
-    theme.note(
-        "Trợ lý này trả lời dựa trên một tập câu trả lời soạn sẵn, "
-        "không phải mô hình ngôn ngữ. Nó giải thích khái niệm và kết quả "
-        "đánh giá hiện tại, không chẩn đoán và không kê đơn."
-    )
-
-    st.write("")
-
-    quick_questions = [
-        "Kết quả hiện tại của tôi có ý nghĩa gì?",
-        "Vì sao nguy cơ tổng thể của tôi ở mức CAO?",
-        "Bệnh nào đang có nguy cơ cao nhất?",
-        "Nguy cơ 70% có nghĩa là chắc chắn mắc bệnh không?",
-        "Những yếu tố nào ảnh hưởng tới dự đoán?",
-        "Huyết áp cao là gì?",
-        "BMI là gì?",
-        "Hệ thống đưa ra dự đoán bằng cách nào?",
-    ]
-
-    st.markdown("**Câu hỏi nhanh**")
-
-    columns = st.columns(2)
-
-    for index, quick in enumerate(quick_questions):
-        if columns[index % 2].button(
-            quick, key=f"quick_{index}", use_container_width=True
-        ):
-            st.session_state["ask_ai_question"] = quick
-            st.session_state["ask_ai_auto_submit"] = True
-            st.rerun()
-
-    st.write("")
-
-    question = st.text_input(
-        "Câu hỏi của bạn",
-        key="ask_ai_question",
-        placeholder="Ví dụ: Vì sao nguy cơ tim mạch của tôi cao?"
-    )
-
-    asked = st.button("Gửi câu hỏi", type="primary")
-
-    if asked or st.session_state.get("ask_ai_auto_submit", False):
-
-        answer = sections.ask_ai_local(
-            question,
-            st.session_state.get("assessment")
-        )
-
-        st.markdown("**Trả lời**")
-        st.info(answer)
-
-        st.session_state["ask_ai_auto_submit"] = False
-
-
-# ============================================================
-# 10. TRANG CHÍNH
+# 9. TRANG CHÍNH
 # ============================================================
 
 theme.hero(
@@ -864,7 +798,7 @@ theme.hero(
 
 selected_patient = render_sidebar()
 
-tab_names = ["🩺 Đánh giá nguy cơ", "📈 Hồ sơ & lịch sử", "💬 Hỏi đáp"]
+tab_names = ["🩺 Đánh giá nguy cơ", "📈 Hồ sơ & lịch sử"]
 
 if SHOW_TRUSTWORTHY_AI:
     tab_names.append("🤖 Trustworthy AI")
@@ -880,10 +814,7 @@ with tabs[0]:
 with tabs[1]:
     render_records_tab(selected_patient)
 
-with tabs[2]:
-    render_assistant_tab()
-
-next_tab = 3
+next_tab = 2
 
 if SHOW_TRUSTWORTHY_AI:
     with tabs[next_tab]:

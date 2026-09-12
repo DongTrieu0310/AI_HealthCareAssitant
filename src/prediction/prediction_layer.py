@@ -54,6 +54,29 @@ THRESHOLD_PATHS = {
 
 
 # ============================================================
+# 2.1 PREPROCESSING TRANSFORMERS
+# ============================================================
+
+# CARDIO and DIABETES were trained on standardized data, so the same
+# scaler must be applied before predicting. HYPERTENSION was trained on
+# raw units and needs none.
+#
+# These files are produced by src/preprocessing/export_transformers.py.
+
+SCALER_PATHS = {
+    "cardio": DATA_MODELS / "cardio_scaler.pkl",
+    "diabetes": DATA_MODELS / "diabetes_scaler.pkl",
+}
+
+IMPUTER_PATHS = {
+    "diabetes": DATA_MODELS / "diabetes_imputer.pkl",
+}
+
+# Insulin values treated as unreliable during preprocessing.
+SUSPICIOUS_INSULIN = [102.5, 169.5]
+
+
+# ============================================================
 # 3. EXPECTED FEATURES
 # ============================================================
 
@@ -160,6 +183,95 @@ def load_thresholds():
 
 
 # ============================================================
+# 5.1 LOAD PREPROCESSING TRANSFORMERS
+# ============================================================
+
+def load_transformers():
+    """
+    Load the scalers and imputers used during training.
+
+    Returns
+    -------
+    dict
+        {disease: {"scaler": ..., "imputer": ...}} for every disease
+        that has a transformer file on disk.
+
+    Raises
+    ------
+    FileNotFoundError
+        When a disease known to need a scaler has none saved. Predicting
+        without it would silently produce meaningless probabilities.
+    """
+
+    transformers = {}
+
+    for disease, path in SCALER_PATHS.items():
+
+        if not path.exists():
+            raise FileNotFoundError(
+                f"Missing scaler for '{disease}': {path}\n"
+                "This model was trained on standardized data. Run "
+                "`python src/preprocessing/export_transformers.py` "
+                "to regenerate it."
+            )
+
+        transformers.setdefault(disease, {})["scaler"] = joblib.load(path)
+
+    for disease, path in IMPUTER_PATHS.items():
+
+        if path.exists():
+            transformers.setdefault(disease, {})["imputer"] = (
+                joblib.load(path)
+            )
+
+    return transformers
+
+
+def apply_transformers(patient_data, disease, transformers):
+    """
+    Apply the training-time preprocessing to one patient's features.
+
+    Feeding raw values to a model trained on standardized data makes its
+    output nearly constant, so this step is required for correctness —
+    not an optimisation.
+    """
+
+    steps = (transformers or {}).get(disease)
+
+    if not steps:
+        return patient_data
+
+    data = patient_data.copy()
+
+    imputer = steps.get("imputer")
+
+    if imputer is not None:
+
+        if "Insulin" in data.columns:
+            data["Insulin"] = data["Insulin"].replace(
+                SUSPICIOUS_INSULIN,
+                float("nan")
+            )
+
+        data = pd.DataFrame(
+            imputer.transform(data),
+            columns=data.columns,
+            index=data.index
+        )
+
+    scaler = steps.get("scaler")
+
+    if scaler is not None:
+        data = pd.DataFrame(
+            scaler.transform(data),
+            columns=data.columns,
+            index=data.index
+        )
+
+    return data
+
+
+# ============================================================
 # 6. VALIDATE INPUT
 # ============================================================
 
@@ -224,11 +336,16 @@ def predict_disease(
     patient_data,
     disease,
     models=None,
-    thresholds=None
+    thresholds=None,
+    transformers=None
 ):
     """
     Generate probability and prediction
     for a single disease.
+
+    The patient data must be supplied in ORIGINAL units (mmHg, cm, kg,
+    years). Any standardization the model was trained with is applied
+    here, so callers never deal with scaled values.
 
     Returns
     -------
@@ -242,9 +359,18 @@ def predict_disease(
     if thresholds is None:
         thresholds = load_thresholds()
 
+    if transformers is None:
+        transformers = load_transformers()
+
     validated_data = validate_input(
         patient_data,
         disease
+    )
+
+    validated_data = apply_transformers(
+        validated_data,
+        disease,
+        transformers
     )
 
     model = models[disease]
@@ -300,26 +426,30 @@ def predict_all(
 
     models = load_models()
     thresholds = load_thresholds()
+    transformers = load_transformers()
 
     cardio_result = predict_disease(
         cardio_data,
         "cardio",
         models,
-        thresholds
+        thresholds,
+        transformers
     )
 
     diabetes_result = predict_disease(
         diabetes_data,
         "diabetes",
         models,
-        thresholds
+        thresholds,
+        transformers
     )
 
     hypertension_result = predict_disease(
         hypertension_data,
         "hypertension",
         models,
-        thresholds
+        thresholds,
+        transformers
     )
 
     return {

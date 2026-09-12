@@ -26,7 +26,8 @@ dõi nhiều lần đo của cùng một bệnh nhân theo thời gian.
 Đây là công cụ **hỗ trợ sàng lọc và hỗ trợ quyết định**. Mọi kết quả là ước
 tính xác suất của mô hình, không phải kết luận y khoa. Nguyên tắc này được thể
 hiện trực tiếp trong sản phẩm: cảnh báo hiển thị ở cuối mỗi lần đánh giá, và
-trợ lý hỏi đáp từ chối mọi câu hỏi liên quan tới kê đơn hay tự điều trị.
+hệ thống chỉ đưa ra khuyến nghị theo dõi, không có chức năng nào liên quan tới
+kê đơn hay điều trị.
 
 ---
 
@@ -120,6 +121,30 @@ Nhận xét:
   chỉ số rất cơ bản, không đủ thông tin để phân biệt tốt hơn. Không nên trình
   bày con số này như một thành công.
 
+### Tiền xử lý phải giống hệt lúc huấn luyện
+
+Mô hình tim mạch và đái tháo đường được huấn luyện trên dữ liệu đã chuẩn hoá
+bằng `StandardScaler`; mô hình tăng huyết áp dùng đơn vị gốc. Do đó khi dự đoán
+cho một bệnh nhân mới, hai mô hình đầu bắt buộc phải áp dụng đúng bộ scaler đã
+học từ tập huấn luyện.
+
+Đây từng là một lỗi thực sự của hệ thống: scaler không được lưu lại, ứng dụng
+đưa thẳng giá trị thô (huyết áp 140, chiều cao 170) vào mô hình, khiến xác suất
+gần như không đổi giữa các bệnh nhân — một người 25 tuổi khoẻ mạnh vẫn nhận
+khoảng 64% nguy cơ tim mạch. Lỗi đã được sửa: scaler và imputer được dựng lại
+đúng quy trình gốc (`src/preprocessing/export_transformers.py`, đối chiếu khớp
+tới sai số 1e-16 với tập kiểm thử đã lưu) và được áp dụng trong tầng dự đoán.
+Kết quả sau khi sửa:
+
+| Ca thử | Tim mạch | Đái tháo đường | Tăng huyết áp |
+|---|---:|---:|---:|
+| Nữ 25 tuổi, khoẻ mạnh, HA 110/70 | 12,6% | 3,0% | 0,3% |
+| Nam 45 tuổi, HA 132/85 | 51,4% | 39,0% | 14,0% |
+| Nam 70 tuổi, HA 185/115, hút thuốc | 76,7% | 82,0% | 90,3% |
+
+Bài kiểm thử `tests/test_prediction_scaling.py` chốt lại hành vi này để lỗi
+không tái diễn.
+
 ### Phân mức nguy cơ hiển thị
 
 Cần phân biệt **hai loại ngưỡng** trong hệ thống:
@@ -136,9 +161,12 @@ có xác suất cao nhất.
 
 ## 5. Chức năng của ứng dụng
 
-- **Nhập chỉ số** theo ba nhóm (thông tin chung, đái tháo đường, tăng huyết áp),
-  có kiểm tra hợp lệ trước khi chạy mô hình (ví dụ: huyết áp tâm thu phải cao
-  hơn tâm trương).
+- **Nhập chỉ số** trong một biểu mẫu ba cột (thông tin cơ bản · chỉ số đo được ·
+  lối sống và tiền sử), kèm mục "chỉ số chuyên sâu" thu gọn cho các giá trị xét
+  nghiệm. Các trường dùng chung giữa ba mô hình (tuổi, giới tính, huyết áp,
+  đường huyết) chỉ nhập một lần; BMI tự tính từ chiều cao và cân nặng. Tổng số
+  ô nhập giảm từ 30 xuống 15 ô chính. Hệ thống kiểm tra hợp lệ trước khi chạy
+  mô hình (ví dụ: huyết áp tâm thu phải cao hơn tâm trương).
 - **Kết quả đánh giá**: xác suất từng bệnh, mức nguy cơ, bệnh cần ưu tiên, số
   bệnh ở mức cao/trung bình.
 - **Khuyến nghị** theo từng bệnh và theo mức nguy cơ, kèm cảnh báo giới hạn sử
@@ -150,6 +178,8 @@ có xác suất cao nhất.
   thời gian), bảng đầy đủ và xuất CSV.
 - **Toàn bộ giao diện bằng tiếng Việt**; các khoá dùng trong logic vẫn giữ
   nguyên tiếng Anh, chỉ dịch ở lớp hiển thị.
+- **Trình bày kết quả trực quan**: dải tóm tắt nguy cơ tổng thể và ba thẻ bệnh
+  có màu theo mức (xanh / vàng / đỏ) kèm thanh tỉ lệ, thay cho danh sách chữ.
 
 Dữ liệu bệnh nhân lưu trong một tệp SQLite cục bộ (`data/patient_records.db`),
 gồm hai bảng: `patients` và `measurements` (quan hệ một–nhiều).
@@ -219,22 +249,21 @@ với bản chất của Random Forest (tập hợp nhiều cây, ít nhạy v�
 
 ## 7. Hạn chế (trình bày trung thực)
 
-1. **Mục "Hỏi AI" không phải AI.** Đây là hàm dò từ khoá trả về các câu trả lời
-   viết sẵn trong mã nguồn; toàn dự án không gọi bất kỳ mô hình ngôn ngữ nào.
-   Nó chỉ đọc kết quả đánh giá hiện tại để ghép vào câu trả lời mẫu. AI thực sự
-   của đồ án nằm ở ba mô hình Random Forest.
-2. **SHAP là giải thích ở mức mô hình, không phải cho từng bệnh nhân.** Giá trị
+1. **SHAP là giải thích ở mức mô hình, không phải cho từng bệnh nhân.** Giá trị
    SHAP được tính sẵn ngoại tuyến trên một mẫu của tập kiểm thử; giao diện chỉ
    đọc lại kết quả có sẵn, nên không giải thích được cho ca vừa nhập.
-3. **Chưa phân tích công bằng và độ bền vững cho mô hình tim mạch** — mới làm
+2. **Chưa phân tích công bằng và độ bền vững cho mô hình tim mạch** — mới làm
    trên hai mô hình còn lại.
-4. **Mô hình tim mạch có hiệu năng khiêm tốn** (AUC 0,799) do dữ liệu đầu vào
+3. **Mô hình tim mạch có hiệu năng khiêm tốn** (AUC 0,799) do dữ liệu đầu vào
    hạn chế.
-5. **Bộ đái tháo đường quá nhỏ** (154 ca kiểm thử), mọi chỉ số trên bộ này có
+4. **Bộ đái tháo đường quá nhỏ** (154 ca kiểm thử), mọi chỉ số trên bộ này có
    khoảng tin cậy rộng.
-6. **Dữ liệu bệnh nhân lưu cục bộ, chưa có xác thực người dùng** — phù hợp với
+5. **Dữ liệu bệnh nhân lưu cục bộ, chưa có xác thực người dùng** — phù hợp với
    bản thử nghiệm, chưa đủ điều kiện triển khai thật với dữ liệu y tế thật.
-7. **Chưa có giám sát vận hành và nhật ký kiểm toán** sau khi triển khai.
+6. **Chưa có giám sát vận hành và nhật ký kiểm toán** sau khi triển khai.
+7. **Hệ thống không có trợ lý hội thoại.** Mục hỏi đáp trước đây chỉ dò từ khoá
+   và trả về câu trả lời viết sẵn nên đã được gỡ bỏ; AI của đồ án nằm ở ba mô
+   hình Random Forest, không phải ở một chatbot.
 
 ---
 
@@ -245,8 +274,8 @@ với bản chất của Random Forest (tập hợp nhiều cây, ít nhạy v�
 - Xử lý lại giá trị thiếu của bộ Pima (các số 0 vô lý) rồi huấn luyện lại mô
   hình đái tháo đường, kiểm tra xem `SkinThickness` còn đứng đầu không.
 - Bổ sung phân tích công bằng và độ bền vững cho mô hình tim mạch.
-- Thay mục "Hỏi AI" bằng tên đúng bản chất, hoặc nối vào một mô hình ngôn ngữ
-  thật kèm ràng buộc an toàn y tế.
+- Nếu cần trợ lý hội thoại thật thì nối vào một mô hình ngôn ngữ kèm ràng buộc
+  an toàn y tế, thay vì mô phỏng bằng dò từ khoá.
 - Chuyển lưu trữ sang máy chủ có xác thực, thêm cảnh báo tự động khi chỉ số của
   bệnh nhân xấu đi qua nhiều lần đo.
 
@@ -265,6 +294,9 @@ sàng. Các đánh giá Trustworthy AI đã chỉ ra hai vấn đề cụ thể 
 chênh lệch công bằng theo nhóm tuổi ở mô hình đái tháo đường, và dấu hiệu mô
 hình học phải quy luật giả từ dữ liệu thiếu.
 
+Quá trình kiểm thử cũng phát hiện và sửa một lỗi nghiêm trọng ở khâu suy luận
+(thiếu bước chuẩn hoá dữ liệu), kèm bài kiểm thử chống tái diễn.
+
 Giá trị của đồ án nằm ở chỗ hệ thống được đặt đúng vị trí của nó: **hỗ trợ sàng
 lọc, không thay thế chẩn đoán.**
 
@@ -275,6 +307,12 @@ lọc, không thay thế chẩn đoán.**
 ```bash
 pip install streamlit pandas scikit-learn joblib shap matplotlib
 streamlit run src/ui/app.py
+```
+
+Kiểm tra khâu tiền xử lý khi dự đoán:
+
+```bash
+python tests/test_prediction_scaling.py
 ```
 
 Ứng dụng dùng mô hình đã huấn luyện sẵn trong `data/models/`, không cần huấn

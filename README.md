@@ -124,10 +124,10 @@ They hide the "🤖 Trí tuệ nhân tạo đáng tin cậy" dashboard and the
 ## Cấu trúc giao diện
 
 ```
-src/ui/app.py        màn hình chính: thanh bên + 3 tab (Đánh giá / Hồ sơ / Hỏi đáp)
+src/ui/app.py        màn hình chính: thanh bên + 2 tab (Đánh giá / Hồ sơ)
 src/ui/theme.py      CSS dùng chung và các thành phần hiển thị (thẻ nguy cơ, huy hiệu…)
 src/ui/labels.py     nhãn tiếng Việt và màu theo mức nguy cơ
-src/ui/sections.py   phần Trustworthy AI, câu hỏi bảo vệ, trợ lý hỏi đáp
+src/ui/sections.py   phần Trustworthy AI và câu hỏi bảo vệ (ẩn theo cờ)
 .streamlit/config.toml  màu chủ đạo của ứng dụng
 ```
 
@@ -142,8 +142,23 @@ sâu".
 ## Ngôn ngữ giao diện
 
 Toàn bộ phần hiển thị của ứng dụng Streamlit (nhãn form, thông báo lỗi, kết quả
-đánh giá, khuyến nghị, trợ lý Hỏi AI, hồ sơ bệnh nhân) đã được chuyển sang
+đánh giá, khuyến nghị, hồ sơ bệnh nhân) đã được chuyển sang
 tiếng Việt. Các khoá dùng trong logic (`LOW` / `MODERATE` / `HIGH`, khoá bệnh
 `cardio` / `diabetes` / `hypertension`, tên cột trong CSDL) vẫn giữ nguyên tiếng
 Anh; `src/ui/app.py` chỉ dịch ở lớp hiển thị qua `risk_level_vi()` và
 `disease_name_vi()`.
+
+## Tiền xử lý khi dự đoán
+
+Mô hình tim mạch và đái tháo đường được huấn luyện trên dữ liệu đã chuẩn hoá
+(`StandardScaler`), nên tầng dự đoán phải áp dụng đúng bộ scaler đó trước khi
+đưa dữ liệu vào mô hình — nếu không, xác suất gần như không đổi giữa các bệnh
+nhân. Scaler và imputer được dựng lại bằng:
+
+```bash
+python src/preprocessing/export_transformers.py   # ghi data/models/*_scaler.pkl
+python tests/test_prediction_scaling.py           # kiểm tra lại
+```
+
+`prediction_layer.load_transformers()` sẽ báo lỗi rõ ràng nếu thiếu tệp scaler,
+thay vì âm thầm dự đoán sai.
