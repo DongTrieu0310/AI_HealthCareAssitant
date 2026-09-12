@@ -116,7 +116,9 @@ Nhận xét:
   chặt với chính hai đặc trưng huyết áp có trong đầu vào.
 - **Đái tháo đường có AUC khá (0,875) nhưng Precision thấp (0,648)** — cứ 10 ca
   bị báo nguy cơ thì khoảng 3–4 ca là báo nhầm. Đây là cái giá phải trả khi hạ
-  ngưỡng xuống 0,35 để đạt Recall 0,852.
+  ngưỡng xuống 0,35 để đạt Recall 0,852. **Lưu ý:** con số 0,875 còn bị thổi
+  phồng bởi rò rỉ nhãn trong dữ liệu — xem mục 6.1; AUC thực tế ước tính khoảng
+  0,806.
 - **Tim mạch yếu nhất** (AUC 0,799, Accuracy 0,722). Bộ dữ liệu này chỉ có các
   chỉ số rất cơ bản, không đủ thông tin để phân biệt tốt hơn. Không nên trình
   bày con số này như một thành công.
@@ -201,10 +203,41 @@ tuyệt đối trung bình):
 
 Kết quả phù hợp với y văn ở hai mô hình tim mạch và tăng huyết áp: huyết áp tâm
 thu là yếu tố chi phối. Riêng mô hình đái tháo đường, việc `SkinThickness` vượt
-lên trên `Glucose` là **một dấu hiệu đáng nghi ngờ** — nhiều khả năng do bộ
-Pima có lượng lớn giá trị 0 được điền thay cho dữ liệu thiếu, khiến mô hình học
-phải một quy luật giả. Đây là điểm cần kiểm tra lại, không nên diễn giải như
-một phát hiện y khoa.
+lên trên `Glucose` là dấu hiệu bất thường. Kiểm tra dữ liệu cho thấy nguyên nhân
+là **rò rỉ nhãn (target leakage)**, không phải một phát hiện y khoa.
+
+#### Rò rỉ nhãn trong bộ đái tháo đường
+
+Tệp `data/raw/diabetes.csv` là bản Pima **đã được điền sẵn giá trị thiếu**, và
+việc điền đó dùng chính nhãn bệnh: mỗi lớp được điền một hằng số riêng. Hệ quả
+là chỉ nhìn giá trị điền cũng đoán được nhãn:
+
+| Giá trị | Số ca | Tỉ lệ mắc bệnh |
+|---|---:|---:|
+| `Insulin = 102,5` | 236 | 0,0% |
+| `Insulin = 169,5` | 138 | 100,0% |
+| `SkinThickness = 27` | 162 | 4,3% |
+| `SkinThickness = 32` | 119 | 85,7% |
+| Các giá trị khác | — | ~33% |
+
+Gần một nửa số dòng (374/768) mang một giá trị `Insulin` tiết lộ nhãn tuyệt đối.
+Bước tiền xử lý hiện tại **có** xử lý hai giá trị `Insulin` này (thay bằng NaN
+rồi điền trung vị) nhưng **bỏ sót** `SkinThickness` — đó chính là lý do
+`SkinThickness` đứng đầu bảng SHAP: chỉ riêng biến này đã cho AUC 0,807.
+
+Ảnh hưởng lên kết quả, đo bằng cách huấn luyện lại với cùng tham số và cùng
+cách chia tập:
+
+| Cách xử lý | ROC-AUC | Đặc trưng quan trọng nhất |
+|---|---:|---|
+| Không lọc gì (dữ liệu như đang có) | 0,945 | `Insulin` |
+| Hiện tại — chỉ lọc `Insulin` | 0,875 | `Glucose`, `SkinThickness` |
+| Lọc cả `SkinThickness` rò rỉ | **0,806** | `Glucose`, `BMI`, `DPF` |
+
+Nói cách khác, **AUC thật của mô hình đái tháo đường vào khoảng 0,806**; phần
+chênh 0,069 là do mô hình đọc được nhãn qua giá trị điền. Cần khắc phục bằng
+cách huấn luyện lại trên bộ Pima gốc và tự điền giá trị thiếu chỉ từ thống kê
+của tập huấn luyện.
 
 ### 6.2 Tính công bằng
 
@@ -249,21 +282,43 @@ với bản chất của Random Forest (tập hợp nhiều cây, ít nhạy v�
 
 ## 7. Hạn chế (trình bày trung thực)
 
-1. **SHAP là giải thích ở mức mô hình, không phải cho từng bệnh nhân.** Giá trị
-   SHAP được tính sẵn ngoại tuyến trên một mẫu của tập kiểm thử; giao diện chỉ
-   đọc lại kết quả có sẵn, nên không giải thích được cho ca vừa nhập.
-2. **Chưa phân tích công bằng và độ bền vững cho mô hình tim mạch** — mới làm
+### Về dữ liệu
+
+1. **Bộ đái tháo đường có rò rỉ nhãn.** Giá trị thiếu được điền theo từng lớp
+   nhãn trước khi chia tập, khiến AUC báo cáo (0,875) cao hơn thực tế (khoảng
+   0,806) — xem mục 6.1.
+2. **Dữ liệu tim mạch chưa lọc giá trị vô lý.** Bộ gốc chứa huyết áp tâm thu từ
+   −150 tới 16.020 mmHg (228 dòng ngoài khoảng 60–250) và 53 dòng chiều cao
+   dưới 120 cm hoặc trên 220 cm; tiền xử lý chỉ bỏ trùng lặp và đổi đơn vị tuổi,
+   không loại các giá trị này. Đây là một phần lý do mô hình tim mạch yếu.
+3. **Ba mô hình đến từ ba quần thể khác nhau.** Pima là phụ nữ thổ dân Mỹ từ 21
+   tuổi, Framingham là dân số Mỹ 32–70 tuổi, còn hệ thống lại phục vụ người dùng
+   Việt Nam ở mọi lứa tuổi. Ứng dụng cho nhập tuổi 1–120 trong khi mô hình tăng
+   huyết áp chỉ từng thấy 32–70 tuổi — ngoài khoảng đó là ngoại suy.
+4. **Bộ đái tháo đường quá nhỏ** (154 ca kiểm thử): mọi chỉ số có khoảng tin cậy
+   rộng, và chênh lệch Recall giữa các nhóm tuổi lên tới 0,304.
+
+### Về mô hình
+
+5. **Mô hình tim mạch có hiệu năng khiêm tốn** (AUC 0,799).
+6. **Xác suất chưa được hiệu chỉnh (calibration).** Random Forest thường cho xác
+   suất lệch, trong khi ngưỡng 0,30 và 0,70 đang áp thẳng lên xác suất thô.
+7. **Chưa phân tích công bằng và độ bền vững cho mô hình tim mạch** — mới làm
    trên hai mô hình còn lại.
-3. **Mô hình tim mạch có hiệu năng khiêm tốn** (AUC 0,799) do dữ liệu đầu vào
-   hạn chế.
-4. **Bộ đái tháo đường quá nhỏ** (154 ca kiểm thử), mọi chỉ số trên bộ này có
-   khoảng tin cậy rộng.
-5. **Dữ liệu bệnh nhân lưu cục bộ, chưa có xác thực người dùng** — phù hợp với
-   bản thử nghiệm, chưa đủ điều kiện triển khai thật với dữ liệu y tế thật.
-6. **Chưa có giám sát vận hành và nhật ký kiểm toán** sau khi triển khai.
-7. **Hệ thống không có trợ lý hội thoại.** Mục hỏi đáp trước đây chỉ dò từ khoá
-   và trả về câu trả lời viết sẵn nên đã được gỡ bỏ; AI của đồ án nằm ở ba mô
-   hình Random Forest, không phải ở một chatbot.
+8. **SHAP là giải thích ở mức mô hình, không phải cho từng bệnh nhân.** Giá trị
+   SHAP được tính sẵn ngoại tuyến trên một mẫu của tập kiểm thử; giao diện chỉ
+   đọc lại kết quả có sẵn.
+
+### Về hệ thống
+
+9. **Dữ liệu bệnh nhân lưu cục bộ, chưa có xác thực người dùng và chưa mã hoá** —
+   phù hợp bản thử nghiệm, chưa đủ điều kiện dùng với dữ liệu y tế thật.
+10. **Chưa có giám sát vận hành và nhật ký kiểm toán** sau khi triển khai.
+11. **Môi trường chạy chưa ghim phiên bản**: `requirements.txt` đang trống, và
+    mô hình lưu bằng scikit-learn 1.9.0 phát sinh cảnh báo khi nạp bằng 1.9.1.
+12. **Hệ thống không có trợ lý hội thoại.** Mục hỏi đáp trước đây chỉ dò từ khoá
+    và trả về câu trả lời viết sẵn nên đã được gỡ bỏ; AI của đồ án nằm ở ba mô
+    hình Random Forest, không phải ở một chatbot.
 
 ---
 
@@ -271,8 +326,16 @@ với bản chất của Random Forest (tập hợp nhiều cây, ít nhạy v�
 
 - Tính SHAP trực tiếp cho từng ca vừa nhập, để giải thích "vì sao ca này bị xếp
   nguy cơ cao".
-- Xử lý lại giá trị thiếu của bộ Pima (các số 0 vô lý) rồi huấn luyện lại mô
-  hình đái tháo đường, kiểm tra xem `SkinThickness` còn đứng đầu không.
+- **Ưu tiên cao nhất:** huấn luyện lại mô hình đái tháo đường trên bộ Pima gốc,
+  tự điền giá trị thiếu bằng thống kê chỉ tính từ tập huấn luyện (không dùng
+  nhãn), rồi báo cáo lại AUC trung thực.
+- Lọc giá trị vô lý của bộ tim mạch (huyết áp, chiều cao ngoài khoảng sinh lý)
+  rồi huấn luyện lại — cách rẻ nhất để cải thiện mô hình yếu nhất.
+- Hiệu chỉnh xác suất (Platt scaling hoặc isotonic) trước khi áp ngưỡng phân mức.
+- Cảnh báo khi người dùng nhập ngoài khoảng dữ liệu mà mô hình từng thấy, thay
+  vì lặng lẽ ngoại suy.
+- Ghim phiên bản thư viện trong `requirements.txt` và lưu lại mô hình bằng đúng
+  phiên bản đó.
 - Bổ sung phân tích công bằng và độ bền vững cho mô hình tim mạch.
 - Nếu cần trợ lý hội thoại thật thì nối vào một mô hình ngôn ngữ kèm ràng buộc
   an toàn y tế, thay vì mô phỏng bằng dò từ khoá.
