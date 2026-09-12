@@ -89,3 +89,76 @@ The system follows a multi-model architecture combined with a Decision Engine.
     render_trustworthy_ai_dashboard(PROJECT_ROOT)
 
 
+
+## Patient records & measurement tracking
+
+The Streamlit UI stores patients and their repeated measurements in a local
+SQLite database (`data/patient_records.db`, created automatically).
+
+- **Thanh bên → 👥 Bệnh nhân**: add a patient, switch between patients, delete a
+  patient (removes their measurements as well).
+- **📊 Kết quả đánh giá → 💾 Lưu lần đo này**: stores the current
+  vitals (BP, glucose, weight, BMI, heart rate, cholesterol) together with the
+  predicted probabilities and the overall risk level for the selected patient.
+- **📈 Hồ sơ bệnh nhân**:
+  - *👥 Danh sách bệnh nhân*: every saved patient with the number of measurements and
+    the date of the last one.
+  - *📊 Lịch sử đo*: latest values with the change since the previous
+    visit, trend charts (blood pressure, glucose/weight/heart rate, predicted
+    risk), the full measurement table, a CSV export, and per-measurement delete.
+
+Storage API: `src/storage/patient_records.py`.
+
+### Section visibility
+
+`src/ui/app.py` defines two flags near the top:
+
+```python
+SHOW_TRUSTWORTHY_AI = False
+SHOW_DEFENSE_QA = False
+```
+
+They hide the "🤖 Trí tuệ nhân tạo đáng tin cậy" dashboard and the
+"❓ Câu hỏi và câu trả lời bảo vệ" section. Set either to `True` to show that section again.
+
+## Cấu trúc giao diện
+
+```
+src/ui/app.py        màn hình chính: thanh bên + 2 tab (Đánh giá / Hồ sơ)
+src/ui/theme.py      CSS dùng chung và các thành phần hiển thị (thẻ nguy cơ, huy hiệu…)
+src/ui/labels.py     nhãn tiếng Việt và màu theo mức nguy cơ
+src/ui/sections.py   phần Trustworthy AI và câu hỏi bảo vệ (ẩn theo cờ)
+.streamlit/config.toml  màu chủ đạo của ứng dụng
+```
+
+Form nhập liệu dùng `st.form`: ứng dụng chỉ chạy lại khi bấm nút đánh giá, nên
+không bị giật và không mất kết quả khi đang chỉnh số liệu.
+
+Các trường trùng nhau giữa ba mô hình (tuổi, giới tính, BMI, huyết áp, đường
+huyết) chỉ phải nhập một lần và được suy ra trong `build_patient()`. BMI mặc
+định tính từ chiều cao và cân nặng; muốn nhập tay thì mở mục "Chỉ số chuyên
+sâu".
+
+## Ngôn ngữ giao diện
+
+Toàn bộ phần hiển thị của ứng dụng Streamlit (nhãn form, thông báo lỗi, kết quả
+đánh giá, khuyến nghị, hồ sơ bệnh nhân) đã được chuyển sang
+tiếng Việt. Các khoá dùng trong logic (`LOW` / `MODERATE` / `HIGH`, khoá bệnh
+`cardio` / `diabetes` / `hypertension`, tên cột trong CSDL) vẫn giữ nguyên tiếng
+Anh; `src/ui/app.py` chỉ dịch ở lớp hiển thị qua `risk_level_vi()` và
+`disease_name_vi()`.
+
+## Tiền xử lý khi dự đoán
+
+Mô hình tim mạch và đái tháo đường được huấn luyện trên dữ liệu đã chuẩn hoá
+(`StandardScaler`), nên tầng dự đoán phải áp dụng đúng bộ scaler đó trước khi
+đưa dữ liệu vào mô hình — nếu không, xác suất gần như không đổi giữa các bệnh
+nhân. Scaler và imputer được dựng lại bằng:
+
+```bash
+python src/preprocessing/export_transformers.py   # ghi data/models/*_scaler.pkl
+python tests/test_prediction_scaling.py           # kiểm tra lại
+```
+
+`prediction_layer.load_transformers()` sẽ báo lỗi rõ ràng nếu thiếu tệp scaler,
+thay vì âm thầm dự đoán sai.

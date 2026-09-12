@@ -26,11 +26,11 @@ Its responsibility is to:
 # ============================================================
 
 GENERAL_RECOMMENDATIONS = [
-    "Maintain a balanced and nutritious diet.",
-    "Maintain regular physical activity appropriate for your condition.",
-    "Maintain a healthy body weight.",
-    "Monitor important health indicators regularly.",
-    "Discuss concerning risk factors with a qualified healthcare professional."
+    "Duy trì chế độ ăn cân đối và đủ dinh dưỡng.",
+    "Vận động thể chất đều đặn, phù hợp với thể trạng.",
+    "Giữ cân nặng ở mức hợp lý.",
+    "Theo dõi các chỉ số sức khỏe quan trọng thường xuyên.",
+    "Trao đổi với nhân viên y tế về những yếu tố nguy cơ đáng lo ngại."
 ]
 
 
@@ -41,25 +41,25 @@ GENERAL_RECOMMENDATIONS = [
 CARDIOVASCULAR_RECOMMENDATIONS = {
 
     "LOW": [
-        "Continue maintaining a heart-healthy lifestyle.",
-        "Maintain regular physical activity.",
-        "Monitor cardiovascular risk factors periodically."
+        "Tiếp tục duy trì lối sống tốt cho tim mạch.",
+        "Vận động thể chất đều đặn.",
+        "Theo dõi định kỳ các yếu tố nguy cơ tim mạch."
     ],
 
     "MODERATE": [
-        "Pay closer attention to cardiovascular risk factors.",
-        "Maintain a heart-healthy diet.",
-        "Maintain regular physical activity.",
-        "Monitor blood pressure and other cardiovascular indicators.",
-        "Consider discussing cardiovascular risk factors with a healthcare professional."
+        "Chú ý hơn tới các yếu tố nguy cơ tim mạch.",
+        "Duy trì chế độ ăn tốt cho tim mạch.",
+        "Vận động thể chất đều đặn.",
+        "Theo dõi huyết áp và các chỉ số tim mạch khác.",
+        "Cân nhắc trao đổi với nhân viên y tế về nguy cơ tim mạch."
     ],
 
     "HIGH": [
-        "Seek professional medical evaluation for cardiovascular risk factors.",
-        "Monitor blood pressure and other cardiovascular indicators regularly.",
-        "Avoid smoking and reduce exposure to tobacco smoke.",
-        "Maintain a heart-healthy diet and appropriate physical activity.",
-        "Do not use the AI result as a medical diagnosis."
+        "Đi khám để được đánh giá chuyên môn về nguy cơ tim mạch.",
+        "Theo dõi huyết áp và các chỉ số tim mạch thường xuyên.",
+        "Không hút thuốc và hạn chế tiếp xúc với khói thuốc.",
+        "Duy trì chế độ ăn tốt cho tim mạch và vận động phù hợp.",
+        "Không xem kết quả AI như một chẩn đoán y khoa."
     ]
 }
 
@@ -71,26 +71,26 @@ CARDIOVASCULAR_RECOMMENDATIONS = {
 DIABETES_RECOMMENDATIONS = {
 
     "LOW": [
-        "Maintain a balanced diet with appropriate carbohydrate intake.",
-        "Maintain regular physical activity.",
-        "Maintain a healthy body weight.",
-        "Continue monitoring diabetes-related risk factors."
+        "Duy trì chế độ ăn cân đối, lượng tinh bột hợp lý.",
+        "Vận động thể chất đều đặn.",
+        "Giữ cân nặng ở mức hợp lý.",
+        "Tiếp tục theo dõi các yếu tố nguy cơ đái tháo đường."
     ],
 
     "MODERATE": [
-        "Pay closer attention to diabetes-related risk factors.",
-        "Maintain a balanced diet and appropriate portion sizes.",
-        "Maintain regular physical activity.",
-        "Monitor blood glucose when appropriate.",
-        "Consider discussing diabetes risk factors with a healthcare professional."
+        "Chú ý hơn tới các yếu tố nguy cơ đái tháo đường.",
+        "Ăn cân đối và kiểm soát khẩu phần.",
+        "Vận động thể chất đều đặn.",
+        "Theo dõi đường huyết khi cần thiết.",
+        "Cân nhắc trao đổi với nhân viên y tế về nguy cơ đái tháo đường."
     ],
 
     "HIGH": [
-        "Seek professional medical evaluation for diabetes-related risk factors.",
-        "Consider appropriate blood glucose testing under professional guidance.",
-        "Maintain a balanced diet and regular physical activity.",
-        "Monitor body weight and other relevant health indicators.",
-        "Do not use the AI result as a medical diagnosis."
+        "Đi khám để được đánh giá chuyên môn về nguy cơ đái tháo đường.",
+        "Cân nhắc xét nghiệm đường huyết theo hướng dẫn của nhân viên y tế.",
+        "Duy trì chế độ ăn cân đối và vận động đều đặn.",
+        "Theo dõi cân nặng và các chỉ số sức khỏe liên quan.",
+        "Không xem kết quả AI như một chẩn đoán y khoa."
     ]
 }
 
@@ -102,26 +102,26 @@ DIABETES_RECOMMENDATIONS = {
 HYPERTENSION_RECOMMENDATIONS = {
 
     "LOW": [
-        "Maintain a healthy lifestyle to support normal blood pressure.",
-        "Maintain regular physical activity.",
-        "Limit excessive dietary sodium.",
-        "Monitor blood pressure periodically."
+        "Duy trì lối sống lành mạnh để giữ huyết áp ổn định.",
+        "Vận động thể chất đều đặn.",
+        "Hạn chế ăn mặn.",
+        "Đo huyết áp định kỳ."
     ],
 
     "MODERATE": [
-        "Monitor blood pressure more regularly.",
-        "Maintain a balanced diet with appropriate sodium intake.",
-        "Maintain regular physical activity.",
-        "Maintain a healthy body weight.",
-        "Consider discussing blood pressure risk factors with a healthcare professional."
+        "Đo huyết áp thường xuyên hơn.",
+        "Ăn cân đối, giảm lượng muối trong khẩu phần.",
+        "Vận động thể chất đều đặn.",
+        "Giữ cân nặng ở mức hợp lý.",
+        "Cân nhắc trao đổi với nhân viên y tế về nguy cơ huyết áp."
     ],
 
     "HIGH": [
-        "Seek professional medical evaluation for blood pressure risk factors.",
-        "Monitor blood pressure regularly.",
-        "Pay close attention to dietary sodium intake.",
-        "Maintain appropriate physical activity as advised by a healthcare professional.",
-        "Do not use the AI result as a medical diagnosis."
+        "Đi khám để được đánh giá chuyên môn về huyết áp.",
+        "Theo dõi huyết áp thường xuyên.",
+        "Đặc biệt chú ý lượng muối trong khẩu phần ăn.",
+        "Vận động ở mức phù hợp theo tư vấn của nhân viên y tế.",
+        "Không xem kết quả AI như một chẩn đoán y khoa."
     ]
 }
 
@@ -225,27 +225,27 @@ def get_overall_recommendations(
     if overall_risk == "LOW":
 
         return [
-            "Continue maintaining a healthy lifestyle.",
-            "Continue regular physical activity.",
-            "Monitor important health indicators periodically."
+            "Tiếp tục duy trì lối sống lành mạnh.",
+            "Tiếp tục vận động thể chất đều đặn.",
+            "Theo dõi định kỳ các chỉ số sức khỏe quan trọng."
         ]
 
     if overall_risk == "MODERATE":
 
         return [
-            "Pay closer attention to your overall health risk factors.",
-            "Maintain a balanced diet and regular physical activity.",
-            "Monitor relevant health indicators regularly.",
-            "Consider discussing important risk factors with a healthcare professional."
+            "Chú ý hơn tới các yếu tố nguy cơ sức khỏe tổng thể.",
+            "Ăn cân đối và vận động thể chất đều đặn.",
+            "Theo dõi thường xuyên các chỉ số sức khỏe liên quan.",
+            "Cân nhắc trao đổi với nhân viên y tế về các yếu tố nguy cơ quan trọng."
         ]
 
     if overall_risk == "HIGH":
 
         return [
-            "Consider seeking professional healthcare evaluation.",
-            "Monitor relevant health indicators closely.",
-            "Follow appropriate healthcare guidance.",
-            "Do not rely on the AI result as a standalone medical decision."
+            "Nên đi khám để được đánh giá chuyên môn.",
+            "Theo dõi sát các chỉ số sức khỏe liên quan.",
+            "Tuân thủ hướng dẫn của nhân viên y tế.",
+            "Không dùng kết quả AI làm căn cứ y khoa duy nhất."
         ]
 
     raise ValueError(
@@ -352,11 +352,10 @@ def generate_recommendations(
         "overall_recommendations":
             overall_recommendations,
         "disclaimer": (
-            "These recommendations are general "
-            "health-support information. They are "
-            "not medical diagnoses or prescriptions. "
-            "Final medical decisions should be made "
-            "by qualified healthcare professionals."
+            "Đây là thông tin hỗ trợ sức khỏe mang tính "
+            "chung, không phải chẩn đoán y khoa hay đơn "
+            "thuốc. Quyết định y khoa cuối cùng phải do "
+            "nhân viên y tế có chuyên môn đưa ra."
         )
     }
 
