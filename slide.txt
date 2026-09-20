@@ -1,0 +1,55 @@
+Giúp tôi làm slide:
+
+1. Giới thiệu Đề tài. (thành viên, GIẢNG VIÊN HƯỚNG DẪN là: TS. Phan Thế Duy, môn học: DT10 - TƯ DUY TRÍ TUỆ NHÂN TẠO (AI002)) - Thuận
+Họ tên,mã số sinh viên
+Đinh Đạt Thông,26410294
+Nguyễn Đông Triều,26410309
+Phạm Thái Thuận,26410297
+
+2. Phân tích phạm vi - Thuận
+• Chốt phạm vi & phần không claim.
+
+3. Phân tích rủi ro theo 5 trục - Thuận
+• 3.1. Rủi ro hệ thống Trustworthy AI.
+• 3.2. Từ rủi ro đến yêu cầu thiết kế.
+
+4. Giải pháp hệ thống - Triều
+• 4.1. Data pipeline (lấy data, clean data, train RandomForest model, deploy model ở local)
+• 4.2. Rule based cho phần khuyến nghị
+
+5. Dữ liệu và kiến trúc - Triều
+• 5.1. Dữ liệu & Đánh giá chất lượng nguồn.
+• 5.2. Luồng xử lý hệ thống tổng quan.
+
+6. Demo chức năng chính - Thông
+• 6.1. Đưa kết quả đánh giá rủi ro 3 bệnh mãn tính: Tim mạch, Tiểu đường, Tăng huyết áp
+• 6.2. Đưa ra khuyến nghị và hỏi đáp nhanh
+
+7. Hạn chế và cải thiện - Thông
+
+8. Kết thúc và hỏi đáp - 5 phút
+
+
+Trách nhiệm:
+1. Triều: implement app AI_HealthCareAssistant và tìm dữ liệu trên kaggle
+2. Thông: implement giải pháp agent chat theo RAG + LLM
+3. Thuận: Tối ưu Document và Slide và tổ chức phân công thuyết trình
+=> Cả team đều đóng góp vào phần kiến trúc và nghiên cứu tìm hiểu giải pháp
+
+
+
+TODO:
+1. Thông:
++ gen slide
++ dịch dự án sang tiếng việt
++ tìm thêm Random Forest
+
+2. Triều:
++ ẩn "Trí tuệ nhân tạo đáng tin cậy" và "Câu hỏi và câu trả lời về quốc phòng"
++ cải thiện phần "Hỏi AI" (Optional)
++ lưu thông số để dữ liệu train sau này (ứng dụng MLOps)
+
+3. Thuận:
++ clone source code và đọc hiểu tổng quan
++ gen báo cáo
++ chuẩn bị script thuyết trình
