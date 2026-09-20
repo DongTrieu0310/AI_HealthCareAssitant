@@ -172,6 +172,75 @@ if transformers:
 
 
 # ============================================================
+# 4. Đánh giá mô hình phải dùng ĐÚNG transformer/ngưỡng live
+# (hồi quy cho src/evaluation/model_evaluation.py)
+# ============================================================
+
+try:
+    from evaluation import model_evaluation as _me
+    from prediction.prediction_layer import load_thresholds as _load_thresholds
+
+    _live_transformers = load_transformers()
+    _live_thresholds = _load_thresholds()
+
+    for _disease in ["cardiovascular", "diabetes", "hypertension"]:
+        _artifacts = _me.load_model_artifacts(_disease)
+        _prediction_key = _me.get_disease_config(_disease).prediction_key
+        # Cùng scaler/imputer object với pipeline live (không fit lại).
+        for _key in ("scaler", "imputer"):
+            _live_obj = _live_transformers.get(_prediction_key, {}).get(_key)
+            _eval_obj = _artifacts["transformers"].get(_key)
+            _same = _live_obj is _eval_obj or (
+                _live_obj is not None
+                and _eval_obj is not None
+                and type(_live_obj) is type(_eval_obj)
+                and str(getattr(_live_obj, "get_params", lambda: "")())
+                == str(getattr(_eval_obj, "get_params", lambda: "")())
+            )
+            report(
+                f"evaluation[{_disease}]: dùng chung {_key} với prediction_layer",
+                bool(_same),
+            )
+        # Cùng ngưỡng với pipeline live (không hardcode, không 0.5 ngầm).
+        _same_thr = abs(
+            float(_artifacts["threshold"]) - float(_live_thresholds[_prediction_key])
+        ) < 1e-12
+        report(
+            f"evaluation[{_disease}]: ngưỡng khớp prediction_layer "
+            f"({_artifacts['threshold']})",
+            bool(_same_thr),
+        )
+
+    # Xác suất đánh giá trên 3 dòng kiểm thử phải khớp predict_disease().
+    for _disease in ["cardiovascular", "diabetes", "hypertension"]:
+        _dataset = _me.load_evaluation_dataset(_disease)
+        _key = _me.get_disease_config(_disease).prediction_key
+        _artifacts = _dataset["artifacts"]
+        _frame = _dataset["X_model_input"].head(3)
+        _probs = _me.predict_for_evaluation(
+            _frame, _disease, _artifacts,
+        )
+        _match = True
+        for _pos, (_i, _row) in enumerate(_frame.iterrows()):
+            from prediction.prediction_layer import predict_disease
+            _raw_row = _dataset["X_display"].loc[[_i]].reset_index(drop=True)
+            _live = predict_disease(
+                _raw_row, _key,
+                {_key: _artifacts["model"]},
+                {_key: float(_artifacts["threshold"])},
+                {_key: dict(_artifacts["transformers"])},
+            )
+            if abs(float(_live["probability"]) - float(_probs[_pos])) > 1e-9:
+                _match = False
+        report(
+            f"evaluation[{_disease}]: xác suất khớp predict_disease()",
+            bool(_match),
+        )
+except Exception as error:  # noqa: BLE001 - báo lỗi, không che giấu
+    report("evaluation dùng transformer/ngưỡng live", False, str(error))
+
+
+# ============================================================
 # KẾT QUẢ
 # ============================================================
 
@@ -184,3 +253,4 @@ if failures:
     sys.exit(1)
 
 print("Tất cả phép kiểm tra đều đạt.")
+

@@ -1,0 +1,565 @@
+{
+  "model": "RandomForestClassifier",
+  "model_file": "cardio_random_forest.pkl",
+  "model_path": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\cardio_random_forest.pkl",
+  "n_estimators": 200,
+  "disease": "cardiovascular",
+  "display_name_vi": "Tim mạch",
+  "display_name_en": "Cardiovascular",
+  "dataset": "cardio.csv (held-out 20% split) -> live pipeline; verified against C:\\AI\\AI_HealthCareAssitant-dev\\data\\processed\\cardio_X_test.csv",
+  "n_samples": 14000,
+  "n_features": 11,
+  "features": [
+    "age",
+    "gender",
+    "height",
+    "weight",
+    "ap_hi",
+    "ap_lo",
+    "cholesterol",
+    "gluc",
+    "smoke",
+    "alco",
+    "active"
+  ],
+  "target_column": "cardio",
+  "positive_class": 1,
+  "negative_class": 0,
+  "positive_class_meaning_vi": "Có nguy cơ / dấu hiệu bệnh tim mạch",
+  "negative_class_meaning_vi": "Không thuộc nhóm nguy cơ tim mạch",
+  "positive_class_evidence": "prediction_layer.predict_disease() uses predict_proba(X)[0, 1] and prediction = int(probability >= threshold); existing evaluation scripts label class 1 as the disease class (cardio_evalution.py, diabetes_evaluation.py, hypertension_evaluasion.py).",
+  "threshold": 0.4,
+  "threshold_source": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\cardio_threshold.pkl",
+  "threshold_note_vi": "Ngưỡng được nạp từ tệp *_threshold.pkl hiện có qua prediction_layer.load_thresholds(); không hardcode và không thay bằng 0.5.",
+  "accuracy": 0.7218571428571429,
+  "macro_f1": 0.7207131840590487,
+  "auroc": 0.7986642505842451,
+  "auroc_status": "ok",
+  "positive_precision": 0.6963291139240506,
+  "positive_recall": 0.7863064608347627,
+  "positive_f1": 0.7385875402792696,
+  "brier_score": 0.18181651909488372,
+  "brier_score_status": "ok",
+  "false_positive_count": 2399,
+  "false_negative_count": 1495,
+  "classification": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 14000,
+    "positive_label": 1,
+    "negative_label": 0,
+    "threshold": 0.4,
+    "accuracy": 0.7218571428571429,
+    "macro_f1": 0.7207131840590487,
+    "positive_precision": 0.6963291139240506,
+    "positive_recall": 0.7863064608347627,
+    "positive_f1": 0.7385875402792696,
+    "per_class": {
+      "class_0": {
+        "label": 0,
+        "role": "negative",
+        "meaning": "negative class",
+        "precision": 0.7549180327868853,
+        "recall": 0.6574814391776128,
+        "f1": 0.7028388278388278,
+        "support": 7004
+      },
+      "class_1": {
+        "label": 1,
+        "role": "positive",
+        "meaning": "positive / risk class",
+        "precision": 0.6963291139240506,
+        "recall": 0.7863064608347627,
+        "f1": 0.7385875402792696,
+        "support": 6996
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        0,
+        1
+      ],
+      "matrix": [
+        [
+          4605,
+          2399
+        ],
+        [
+          1495,
+          5501
+        ]
+      ],
+      "row_semantics": "rows = actual class, columns = predicted class"
+    },
+    "counts": {
+      "true_negative": 4605,
+      "false_positive": 2399,
+      "false_negative": 1495,
+      "true_positive": 5501
+    },
+    "rates": {
+      "false_positive_rate": 0.3425185608223872,
+      "false_negative_rate": 0.21369353916523728,
+      "true_positive_rate": 0.7863064608347627,
+      "true_negative_rate": 0.6574814391776128,
+      "positive_prediction_rate": 0.5642857142857143,
+      "prevalence": 0.4997142857142857
+    }
+  },
+  "per_class_metrics": {
+    "class_0": {
+      "label": 0,
+      "role": "negative",
+      "meaning": "negative class",
+      "precision": 0.7549180327868853,
+      "recall": 0.6574814391776128,
+      "f1": 0.7028388278388278,
+      "support": 7004
+    },
+    "class_1": {
+      "label": 1,
+      "role": "positive",
+      "meaning": "positive / risk class",
+      "precision": 0.6963291139240506,
+      "recall": 0.7863064608347627,
+      "f1": 0.7385875402792696,
+      "support": 6996
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      0,
+      1
+    ],
+    "matrix": [
+      [
+        4605,
+        2399
+      ],
+      [
+        1495,
+        5501
+      ]
+    ],
+    "row_semantics": "rows = actual class, columns = predicted class"
+  },
+  "counts": {
+    "true_negative": 4605,
+    "false_positive": 2399,
+    "false_negative": 1495,
+    "true_positive": 5501
+  },
+  "rates": {
+    "false_positive_rate": 0.3425185608223872,
+    "false_negative_rate": 0.21369353916523728,
+    "true_positive_rate": 0.7863064608347627,
+    "true_negative_rate": 0.6574814391776128,
+    "positive_prediction_rate": 0.5642857142857143,
+    "prevalence": 0.4997142857142857
+  },
+  "probability_metrics": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 14000,
+    "n_valid_probabilities": 14000,
+    "n_invalid_probabilities": 0,
+    "positive_label": 1,
+    "classes_present": [
+      0,
+      1
+    ],
+    "auroc": 0.7986642505842451,
+    "auroc_status": "ok",
+    "brier_score": 0.18181651909488372,
+    "brier_score_status": "ok",
+    "mean_predicted_probability": 0.5001634430121917,
+    "observed_positive_rate": 0.4997142857142857,
+    "uses": "positive-class predicted probability"
+  },
+  "roc": {
+    "available": true,
+    "status": "ok",
+    "n_points": 5128,
+    "auroc": 0.7986642505842451,
+    "note": "sklearn.metrics.roc_curve, drop_intermediate=True (collinear points removed; curve shape preserved)"
+  },
+  "calibration": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 14000,
+    "n_valid_probabilities": 14000,
+    "n_invalid_probabilities": 0,
+    "n_bins": 10,
+    "strategy": "uniform",
+    "positive_label": 1,
+    "bins": [
+      {
+        "bin": 1,
+        "bin_lower": 0.0,
+        "bin_upper": 0.1,
+        "sample_count": 150,
+        "mean_predicted_probability": 0.08373584017345953,
+        "observed_positive_frequency": 0.04,
+        "absolute_gap": 0.04373584017345953
+      },
+      {
+        "bin": 2,
+        "bin_lower": 0.1,
+        "bin_upper": 0.2,
+        "sample_count": 1474,
+        "mean_predicted_probability": 0.15854027802432705,
+        "observed_positive_frequency": 0.13025780189959293,
+        "absolute_gap": 0.028282476124734113
+      },
+      {
+        "bin": 3,
+        "bin_lower": 0.2,
+        "bin_upper": 0.30000000000000004,
+        "sample_count": 2618,
+        "mean_predicted_probability": 0.2489360995835479,
+        "observed_positive_frequency": 0.24369747899159663,
+        "absolute_gap": 0.005238620591951265
+      },
+      {
+        "bin": 4,
+        "bin_lower": 0.30000000000000004,
+        "bin_upper": 0.4,
+        "sample_count": 1858,
+        "mean_predicted_probability": 0.35496443763243946,
+        "observed_positive_frequency": 0.35468245425188377,
+        "absolute_gap": 0.0002819833805556837
+      },
+      {
+        "bin": 5,
+        "bin_lower": 0.4,
+        "bin_upper": 0.5,
+        "sample_count": 1576,
+        "mean_predicted_probability": 0.4484465425610302,
+        "observed_positive_frequency": 0.4536802030456853,
+        "absolute_gap": 0.005233660484655067
+      },
+      {
+        "bin": 6,
+        "bin_lower": 0.5,
+        "bin_upper": 0.6000000000000001,
+        "sample_count": 1161,
+        "mean_predicted_probability": 0.5427018953313703,
+        "observed_positive_frequency": 0.5469422911283376,
+        "absolute_gap": 0.004240395796967333
+      },
+      {
+        "bin": 7,
+        "bin_lower": 0.6000000000000001,
+        "bin_upper": 0.7000000000000001,
+        "sample_count": 798,
+        "mean_predicted_probability": 0.6459151092442239,
+        "observed_positive_frequency": 0.6729323308270677,
+        "absolute_gap": 0.02701722158284381
+      },
+      {
+        "bin": 8,
+        "bin_lower": 0.7000000000000001,
+        "bin_upper": 0.8,
+        "sample_count": 1103,
+        "mean_predicted_probability": 0.7614811917211511,
+        "observed_positive_frequency": 0.7869446962828649,
+        "absolute_gap": 0.025463504561713757
+      },
+      {
+        "bin": 9,
+        "bin_lower": 0.8,
+        "bin_upper": 0.9,
+        "sample_count": 3257,
+        "mean_predicted_probability": 0.843745938260508,
+        "observed_positive_frequency": 0.841879029782008,
+        "absolute_gap": 0.0018669084785000178
+      },
+      {
+        "bin": 10,
+        "bin_lower": 0.9,
+        "bin_upper": 1.0,
+        "sample_count": 5,
+        "mean_predicted_probability": 0.9075276780608424,
+        "observed_positive_frequency": 0.8,
+        "absolute_gap": 0.1075276780608424
+      }
+    ],
+    "expected_calibration_error": 0.009423062554873695,
+    "mean_predicted_probability": 0.5001634430121917,
+    "observed_positive_rate": 0.4997142857142857,
+    "bin_sample_counts_available": true,
+    "interpretation_note_vi": "Đường hiệu chuẩn chỉ cho biết mức độ khớp giữa xác suất dự đoán và tần suất thực tế trên tập kiểm thử này. Nó KHÔNG chứng minh giá trị lâm sàng."
+  },
+  "error_analysis": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 14000,
+    "positive_label": 1,
+    "negative_label": 0,
+    "threshold": 0.4,
+    "false_positive_count": 2399,
+    "false_negative_count": 1495,
+    "true_positive_count": 5501,
+    "true_negative_count": 4605,
+    "actual_positive_count": 6996,
+    "actual_negative_count": 7004,
+    "false_positive_rate": 0.3425185608223872,
+    "false_negative_rate": 0.21369353916523728,
+    "false_positive_share_of_all": 0.17135714285714285,
+    "false_negative_share_of_all": 0.10678571428571429,
+    "group_probability_summary": {
+      "true_negative_mean_probability": 0.24527922296775406,
+      "false_positive_mean_probability": 0.6036633972084314,
+      "false_negative_mean_probability": 0.28627194508238846,
+      "true_positive_mean_probability": 0.7265246923473875
+    },
+    "dropped_identifier_columns": [],
+    "labels_vi": {
+      "false_positive": "Dương tính giả (False Positives)",
+      "false_negative": "Âm tính giả / Bỏ sót ca có nguy cơ (False Negatives / Missed Positive-Risk Cases)"
+    },
+    "screening_note_vi": "Các ca âm tính giả là những dòng thực tế thuộc nhóm nguy cơ nhưng mô hình không báo nguy cơ trên tập kiểm thử. Con số này mô tả hành vi của mô hình trên dữ liệu kiểm thử; repository không có bằng chứng về hậu quả lâm sàng thực tế, và đây không phải công cụ chẩn đoán."
+  },
+  "decision_engine_view": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 14000,
+    "cutoffs": {
+      "low_below": 0.3,
+      "high_at_or_above": 0.7,
+      "source": "src/decision_engine/decision_engine.py"
+    },
+    "distribution": {
+      "LOW": 4242,
+      "MODERATE": 5393,
+      "HIGH": 4365,
+      "UNKNOWN": 0
+    },
+    "distribution_share": {
+      "LOW": 0.303,
+      "MODERATE": 0.38521428571428573,
+      "HIGH": 0.3117857142857143,
+      "UNKNOWN": 0.0
+    },
+    "high_prediction_rate": 0.3117857142857143,
+    "high_as_positive_metrics": {
+      "status": "ok",
+      "available": true,
+      "n_samples": 14000,
+      "positive_label": 1,
+      "negative_label": 0,
+      "threshold": 0.7,
+      "accuracy": 0.7047857142857142,
+      "macro_f1": 0.6939096349107726,
+      "positive_precision": 0.8279495990836196,
+      "positive_recall": 0.5165809033733562,
+      "positive_f1": 0.6362116010914532,
+      "per_class": {
+        "class_0": {
+          "label": 0,
+          "role": "negative",
+          "meaning": "negative class",
+          "precision": 0.6489880643487286,
+          "recall": 0.8927755568246716,
+          "f1": 0.751607668730092,
+          "support": 7004
+        },
+        "class_1": {
+          "label": 1,
+          "role": "positive",
+          "meaning": "positive / risk class",
+          "precision": 0.8279495990836196,
+          "recall": 0.5165809033733562,
+          "f1": 0.6362116010914532,
+          "support": 6996
+        }
+      },
+      "confusion_matrix": {
+        "labels": [
+          0,
+          1
+        ],
+        "matrix": [
+          [
+            6253,
+            751
+          ],
+          [
+            3382,
+            3614
+          ]
+        ],
+        "row_semantics": "rows = actual class, columns = predicted class"
+      },
+      "counts": {
+        "true_negative": 6253,
+        "false_positive": 751,
+        "false_negative": 3382,
+        "true_positive": 3614
+      },
+      "rates": {
+        "false_positive_rate": 0.10722444317532838,
+        "false_negative_rate": 0.4834190966266438,
+        "true_positive_rate": 0.5165809033733562,
+        "true_negative_rate": 0.8927755568246716,
+        "positive_prediction_rate": 0.3117857142857143,
+        "prevalence": 0.4997142857142857
+      }
+    },
+    "model_threshold_vs_high_risk_level": {
+      "model_positive_count": 7900,
+      "high_risk_level_count": 4365,
+      "rows_where_the_two_rules_disagree": 3535,
+      "disagreement_share": 0.2525
+    },
+    "note_vi": "Decision Engine dùng mốc 0.30 / 0.70 để phân mức nguy cơ, khác với ngưỡng mô hình lấy từ data/models/*_threshold.pkl. Hai cách nhìn được báo cáo song song; logic của ứng dụng KHÔNG bị thay đổi."
+  },
+  "dataset_limitations": {
+    "disease": "cardiovascular",
+    "display_name_vi": "Tim mạch",
+    "target_column": "cardio",
+    "positive_class": 1,
+    "negative_class": 0,
+    "positive_meaning_vi": "Có nguy cơ / dấu hiệu bệnh tim mạch",
+    "negative_meaning_vi": "Không thuộc nhóm nguy cơ tim mạch",
+    "source_file": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\raw\\cardio.csv",
+    "source_columns": [
+      "id",
+      "age",
+      "gender",
+      "height",
+      "weight",
+      "ap_hi",
+      "ap_lo",
+      "cholesterol",
+      "gluc",
+      "smoke",
+      "alco",
+      "active",
+      "cardio"
+    ],
+    "dataset_source_vi": "Bộ dữ liệu thô trong repository: cardio.csv (70000 dòng, 13 cột).",
+    "dataset_provenance": {
+      "status": "NOT FOUND / NEEDS VERIFICATION",
+      "detail_vi": "Repository không có tài liệu về nguồn gốc, đơn vị thu thập, phương pháp lấy mẫu, thời điểm thu thập hay giấy phép của bộ dữ liệu. Không thể xác minh từ mã nguồn => NOT FOUND / NEEDS VERIFICATION."
+    },
+    "sample_size": {
+      "raw_rows": 70000,
+      "raw_columns": 13,
+      "duplicate_rows": 0,
+      "train_rows": 56000,
+      "test_rows": 14000,
+      "feature_count": 11
+    },
+    "class_distribution": {
+      "raw_counts": {
+        "0": 35021,
+        "1": 34979
+      },
+      "raw_share": {
+        "0": 0.5003,
+        "1": 0.4997
+      },
+      "test_counts": {
+        "0": 7004,
+        "1": 6996
+      },
+      "test_share": {
+        "0": 0.5002857142857143,
+        "1": 0.4997142857142857
+      }
+    },
+    "missing_values": {
+      "raw_total_missing": 0,
+      "raw_missing_by_column": {},
+      "processed_test_missing": 0
+    },
+    "zero_value_counts": {},
+    "preprocessing_steps_vi": "Loại bỏ dòng trùng lặp, đổi tuổi từ ngày sang năm (chia 365.25), chia train/test 80/20 (random_state=42, stratify), chuẩn hoá StandardScaler fit trên tập train.",
+    "transformer_vi": "StandardScaler (cardio_scaler.pkl) - bắt buộc khi dự đoán.",
+    "dataset_source_used_for_evaluation": "cardio.csv (held-out 20% split) -> live pipeline; verified against C:\\AI\\AI_HealthCareAssitant-dev\\data\\processed\\cardio_X_test.csv",
+    "verification": {
+      "mode": "raw held-out rows -> validate_input -> apply_transformers (live pipeline)",
+      "verified": true,
+      "max_abs_diff_vs_processed": 8.881784197001252e-16,
+      "y_test_reproduced": true,
+      "non_missing_comparison": null,
+      "split": {
+        "test_size": 0.2,
+        "random_state": 42,
+        "stratify": true
+      },
+      "live_pipeline": "prediction_layer.validate_input + prediction_layer.apply_transformers"
+    },
+    "demographic_coverage": {
+      "gender": {
+        "available": true,
+        "type": "categorical",
+        "n_unique": 2,
+        "counts": {
+          "1": 9080,
+          "2": 4920
+        }
+      },
+      "age": {
+        "available": true,
+        "type": "continuous",
+        "n_unique": 5927,
+        "min": 29.56331279945243,
+        "median": 53.9958932238193,
+        "max": 64.92265571526352
+      }
+    },
+    "demographics_absent": [
+      "male",
+      "sex",
+      "race",
+      "ethnicity",
+      "income",
+      "region",
+      "education"
+    ],
+    "representation_limitations_vi": [
+      "Các trường nhân khẩu học KHÔNG có trong bộ dữ liệu này: male, sex, race, ethnicity, income, region, education => không thể đánh giá mức độ đại diện hay công bằng theo các nhóm đó.",
+      "Không có trường dân tộc, thu nhập, khu vực sinh sống hay trình độ học vấn trong bất kỳ bộ dữ liệu nào của repository.",
+      "Không có thông tin về phương pháp lấy mẫu nên không thể khẳng định mẫu đại diện cho dân số mục tiêu."
+    ],
+    "external_validation": {
+      "exists": false,
+      "statement_vi": "KHÔNG có tập kiểm chứng độc lập/bên ngoài trong repository. Toàn bộ chỉ số được tính trên 20% dữ liệu giữ lại của CHÍNH bộ dữ liệu đã dùng để huấn luyện (test_size=0.20, random_state=42, stratify=y).",
+      "how_verified": "Đã rà soát data/ (raw, processed) và mã nguồn src/; không tồn tại tệp dữ liệu kiểm chứng độc lập nào."
+    },
+    "label_limitations_vi": [
+      "Repository không có data dictionary hay tài liệu định nghĩa nhãn => định nghĩa nhãn: NOT FOUND / NEEDS VERIFICATION.",
+      "Nhãn dùng để đánh giá là cột 'cardio', lớp dương = 1 (Có nguy cơ / dấu hiệu bệnh tim mạch). Ý nghĩa này suy ra từ mã nguồn hiện có, không phải từ tài liệu dữ liệu."
+    ],
+    "known_limitations_vi": [
+      "Tập kiểm thử chỉ là 20% dữ liệu giữ lại của cùng một bộ dữ liệu, không phải tập kiểm chứng độc lập.",
+      "Hiệu năng trên tập kiểm thử KHÔNG đại diện cho hiệu năng thực tế ngoài dân số của bộ dữ liệu này.",
+      "Không xác minh được nguồn gốc/giấy phép dữ liệu nên không thể khẳng định tính phù hợp cho mục đích lâm sàng.",
+      "Dữ liệu thiếu và các giá trị 0 bất thường có thể làm sai lệch chỉ số.",
+      "Nhãn có thể chứa sai số; định nghĩa nhãn không được tài liệu hóa.",
+      "Thiếu nhiều trường nhân khẩu học nên không thể đánh giá đầy đủ tính đại diện và công bằng giữa các nhóm."
+    ],
+    "split_note_vi": "Tập đánh giá là 20% dữ liệu giữ lại (test_size=0.20, random_state=42, stratify=y). Đây là hold-out nội bộ, không phải kiểm chứng độc lập.",
+    "evaluation_disclaimer_vi": "Các chỉ số dưới đây mô tả hành vi của mô hình trên tập dữ liệu kiểm thử đã được giữ lại. Chúng KHÔNG chứng minh giá trị lâm sàng hay độ chính xác chẩn đoán. Hệ thống được thiết kế cho mục đích sàng lọc/hỗ trợ nguy cơ, không phải chẩn đoán y khoa và không thay thế nhân viên y tế có chuyên môn.",
+    "screening_disclaimer_reference_vi": "Cảnh báo chung của ứng dụng vẫn giữ nguyên và được hiển thị ở màn hình đánh giá nguy cơ (nguồn: src/recommendation/recommendation_engine.py, khóa 'disclaimer')."
+  },
+  "metric_family_note_vi": "AUROC, Brier và đường hiệu chuẩn dùng XÁC SUẤT dự đoán. Accuracy, Precision, Recall, F1 và ma trận nhầm lẫn dùng NGƯỠNG mô hình lấy từ *_threshold.pkl.",
+  "evaluation_disclaimer_vi": "Các chỉ số dưới đây mô tả hành vi của mô hình trên tập dữ liệu kiểm thử đã được giữ lại. Chúng KHÔNG chứng minh giá trị lâm sàng hay độ chính xác chẩn đoán. Hệ thống được thiết kế cho mục đích sàng lọc/hỗ trợ nguy cơ, không phải chẩn đoán y khoa và không thay thế nhân viên y tế có chuyên môn.",
+  "screening_disclaimer_reference_vi": "Cảnh báo chung của ứng dụng vẫn giữ nguyên và được hiển thị ở màn hình đánh giá nguy cơ (nguồn: src/recommendation/recommendation_engine.py, khóa 'disclaimer').",
+  "records_note_vi": "Bảng lỗi hiển thị giá trị đặc trưng theo đơn vị của tập đánh giá và chỉ dùng chỉ số dòng (evaluation_row_index); không có cột định danh.",
+  "generated_at": "2026-09-19T08:02:52+00:00",
+  "artifacts_written": {
+    "confusion_matrix_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_confusion_matrix.csv",
+    "per_class_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_per_class_metrics.csv",
+    "calibration_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_calibration.csv",
+    "roc_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_roc.csv",
+    "false_positives_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_false_positives.csv",
+    "false_negatives_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_false_negatives.csv",
+    "plot_reliability": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\cardiovascular_reliability.png",
+    "plot_roc": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\cardiovascular_roc.png",
+    "plot_confusion_matrix": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\cardiovascular_confusion_matrix.png",
+    "metrics_json": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_metrics.json"
+  }
+}

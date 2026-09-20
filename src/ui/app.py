@@ -29,6 +29,9 @@ if str(SRC_PATH) not in sys.path:
 
 
 from application.healthcare_assistant import HealthcareAssistant  # noqa: E402
+from evaluation.evaluation_dashboard import (  # noqa: E402
+    render_model_evaluation_dashboard,
+)
 from storage import patient_records  # noqa: E402
 from ui import sections, theme  # noqa: E402
 from ui.labels import disease_name_vi, risk_level_vi  # noqa: E402
@@ -51,6 +54,11 @@ theme.inject_css()
 # Đặt True để hiện lại hai phần dành cho báo cáo đồ án.
 SHOW_TRUSTWORTHY_AI = False
 SHOW_DEFENSE_QA = False
+
+# Đặt True để hiện bảng Đánh giá mô hình / Trustworthy AI.
+# Bảng này chỉ đọc artifact đã lưu trong reports/model_evaluation/.
+# Tab hiển thị trong UI chính: "Model Evaluation Dashboard".
+SHOW_MODEL_EVALUATION = True
 
 
 # Ba bệnh hệ thống đánh giá: khoá bên Prediction ↔ khoá bên Decision.
@@ -806,6 +814,9 @@ if SHOW_TRUSTWORTHY_AI:
 if SHOW_DEFENSE_QA:
     tab_names.append("❓ Câu hỏi bảo vệ")
 
+if SHOW_MODEL_EVALUATION:
+    tab_names.append("📊 Model Evaluation Dashboard / Đánh giá mô hình")
+
 tabs = st.tabs(tab_names)
 
 with tabs[0]:
@@ -824,6 +835,11 @@ if SHOW_TRUSTWORTHY_AI:
 if SHOW_DEFENSE_QA:
     with tabs[next_tab]:
         sections.render_defense_qa()
+    next_tab += 1
+
+if SHOW_MODEL_EVALUATION:
+    with tabs[next_tab]:
+        render_model_evaluation_dashboard(PROJECT_ROOT)
 
 st.divider()
 

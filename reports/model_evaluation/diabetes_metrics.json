@@ -1,0 +1,551 @@
+{
+  "model": "RandomForestClassifier",
+  "model_file": "diabetes_random_forest.pkl",
+  "model_path": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\diabetes_random_forest.pkl",
+  "n_estimators": 100,
+  "disease": "diabetes",
+  "display_name_vi": "Đái tháo đường",
+  "display_name_en": "Diabetes",
+  "dataset": "diabetes.csv (held-out 20% split) -> live pipeline; verified against C:\\AI\\AI_HealthCareAssitant-dev\\data\\processed\\diabetes_X_test.csv",
+  "n_samples": 154,
+  "n_features": 8,
+  "features": [
+    "Pregnancies",
+    "Glucose",
+    "BloodPressure",
+    "SkinThickness",
+    "Insulin",
+    "BMI",
+    "DiabetesPedigreeFunction",
+    "Age"
+  ],
+  "target_column": "Outcome",
+  "positive_class": 1,
+  "negative_class": 0,
+  "positive_class_meaning_vi": "Có nguy cơ / dấu hiệu đái tháo đường",
+  "negative_class_meaning_vi": "Không thuộc nhóm nguy cơ đái tháo đường",
+  "positive_class_evidence": "prediction_layer.predict_disease() uses predict_proba(X)[0, 1] and prediction = int(probability >= threshold); existing evaluation scripts label class 1 as the disease class (cardio_evalution.py, diabetes_evaluation.py, hypertension_evaluasion.py).",
+  "threshold": 0.35,
+  "threshold_source": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\diabetes_threshold.pkl",
+  "threshold_note_vi": "Ngưỡng được nạp từ tệp *_threshold.pkl hiện có qua prediction_layer.load_thresholds(); không hardcode và không thay bằng 0.5.",
+  "accuracy": 0.7857142857142857,
+  "macro_f1": 0.7778360655737705,
+  "auroc": 0.8752777777777777,
+  "auroc_status": "ok",
+  "positive_precision": 0.647887323943662,
+  "positive_recall": 0.8518518518518519,
+  "positive_f1": 0.736,
+  "brier_score": 0.13565194805194805,
+  "brier_score_status": "ok",
+  "false_positive_count": 25,
+  "false_negative_count": 8,
+  "classification": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 154,
+    "positive_label": 1,
+    "negative_label": 0,
+    "threshold": 0.35,
+    "accuracy": 0.7857142857142857,
+    "macro_f1": 0.7778360655737705,
+    "positive_precision": 0.647887323943662,
+    "positive_recall": 0.8518518518518519,
+    "positive_f1": 0.736,
+    "per_class": {
+      "class_0": {
+        "label": 0,
+        "role": "negative",
+        "meaning": "negative class",
+        "precision": 0.9036144578313253,
+        "recall": 0.75,
+        "f1": 0.819672131147541,
+        "support": 100
+      },
+      "class_1": {
+        "label": 1,
+        "role": "positive",
+        "meaning": "positive / risk class",
+        "precision": 0.647887323943662,
+        "recall": 0.8518518518518519,
+        "f1": 0.736,
+        "support": 54
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        0,
+        1
+      ],
+      "matrix": [
+        [
+          75,
+          25
+        ],
+        [
+          8,
+          46
+        ]
+      ],
+      "row_semantics": "rows = actual class, columns = predicted class"
+    },
+    "counts": {
+      "true_negative": 75,
+      "false_positive": 25,
+      "false_negative": 8,
+      "true_positive": 46
+    },
+    "rates": {
+      "false_positive_rate": 0.25,
+      "false_negative_rate": 0.14814814814814814,
+      "true_positive_rate": 0.8518518518518519,
+      "true_negative_rate": 0.75,
+      "positive_prediction_rate": 0.461038961038961,
+      "prevalence": 0.35064935064935066
+    }
+  },
+  "per_class_metrics": {
+    "class_0": {
+      "label": 0,
+      "role": "negative",
+      "meaning": "negative class",
+      "precision": 0.9036144578313253,
+      "recall": 0.75,
+      "f1": 0.819672131147541,
+      "support": 100
+    },
+    "class_1": {
+      "label": 1,
+      "role": "positive",
+      "meaning": "positive / risk class",
+      "precision": 0.647887323943662,
+      "recall": 0.8518518518518519,
+      "f1": 0.736,
+      "support": 54
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      0,
+      1
+    ],
+    "matrix": [
+      [
+        75,
+        25
+      ],
+      [
+        8,
+        46
+      ]
+    ],
+    "row_semantics": "rows = actual class, columns = predicted class"
+  },
+  "counts": {
+    "true_negative": 75,
+    "false_positive": 25,
+    "false_negative": 8,
+    "true_positive": 46
+  },
+  "rates": {
+    "false_positive_rate": 0.25,
+    "false_negative_rate": 0.14814814814814814,
+    "true_positive_rate": 0.8518518518518519,
+    "true_negative_rate": 0.75,
+    "positive_prediction_rate": 0.461038961038961,
+    "prevalence": 0.35064935064935066
+  },
+  "probability_metrics": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 154,
+    "n_valid_probabilities": 154,
+    "n_invalid_probabilities": 0,
+    "positive_label": 1,
+    "classes_present": [
+      0,
+      1
+    ],
+    "auroc": 0.8752777777777777,
+    "auroc_status": "ok",
+    "brier_score": 0.13565194805194805,
+    "brier_score_status": "ok",
+    "mean_predicted_probability": 0.36376623376623374,
+    "observed_positive_rate": 0.35064935064935066,
+    "uses": "positive-class predicted probability"
+  },
+  "roc": {
+    "available": true,
+    "status": "ok",
+    "n_points": 58,
+    "auroc": 0.8752777777777777,
+    "note": "sklearn.metrics.roc_curve, drop_intermediate=True (collinear points removed; curve shape preserved)"
+  },
+  "calibration": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 154,
+    "n_valid_probabilities": 154,
+    "n_invalid_probabilities": 0,
+    "n_bins": 10,
+    "strategy": "uniform",
+    "positive_label": 1,
+    "bins": [
+      {
+        "bin": 1,
+        "bin_lower": 0.0,
+        "bin_upper": 0.1,
+        "sample_count": 46,
+        "mean_predicted_probability": 0.03086956521739132,
+        "observed_positive_frequency": 0.043478260869565216,
+        "absolute_gap": 0.012608695652173898
+      },
+      {
+        "bin": 2,
+        "bin_lower": 0.1,
+        "bin_upper": 0.2,
+        "sample_count": 26,
+        "mean_predicted_probability": 0.1503846153846154,
+        "observed_positive_frequency": 0.11538461538461539,
+        "absolute_gap": 0.035
+      },
+      {
+        "bin": 3,
+        "bin_lower": 0.2,
+        "bin_upper": 0.30000000000000004,
+        "sample_count": 8,
+        "mean_predicted_probability": 0.25375000000000003,
+        "observed_positive_frequency": 0.25,
+        "absolute_gap": 0.003750000000000031
+      },
+      {
+        "bin": 4,
+        "bin_lower": 0.30000000000000004,
+        "bin_upper": 0.4,
+        "sample_count": 7,
+        "mean_predicted_probability": 0.35000000000000003,
+        "observed_positive_frequency": 0.5714285714285714,
+        "absolute_gap": 0.22142857142857136
+      },
+      {
+        "bin": 5,
+        "bin_lower": 0.4,
+        "bin_upper": 0.5,
+        "sample_count": 12,
+        "mean_predicted_probability": 0.46666666666666673,
+        "observed_positive_frequency": 0.25,
+        "absolute_gap": 0.21666666666666673
+      },
+      {
+        "bin": 6,
+        "bin_lower": 0.5,
+        "bin_upper": 0.6000000000000001,
+        "sample_count": 9,
+        "mean_predicted_probability": 0.5588888888888889,
+        "observed_positive_frequency": 0.4444444444444444,
+        "absolute_gap": 0.11444444444444446
+      },
+      {
+        "bin": 7,
+        "bin_lower": 0.6000000000000001,
+        "bin_upper": 0.7000000000000001,
+        "sample_count": 14,
+        "mean_predicted_probability": 0.6692857142857143,
+        "observed_positive_frequency": 0.8571428571428571,
+        "absolute_gap": 0.18785714285714283
+      },
+      {
+        "bin": 8,
+        "bin_lower": 0.7000000000000001,
+        "bin_upper": 0.8,
+        "sample_count": 16,
+        "mean_predicted_probability": 0.7568750000000001,
+        "observed_positive_frequency": 0.625,
+        "absolute_gap": 0.13187500000000008
+      },
+      {
+        "bin": 9,
+        "bin_lower": 0.8,
+        "bin_upper": 0.9,
+        "sample_count": 9,
+        "mean_predicted_probability": 0.8444444444444444,
+        "observed_positive_frequency": 0.7777777777777778,
+        "absolute_gap": 0.06666666666666665
+      },
+      {
+        "bin": 10,
+        "bin_lower": 0.9,
+        "bin_upper": 1.0,
+        "sample_count": 7,
+        "mean_predicted_probability": 0.9285714285714286,
+        "observed_positive_frequency": 1.0,
+        "absolute_gap": 0.0714285714285714
+      }
+    ],
+    "expected_calibration_error": 0.08142857142857145,
+    "mean_predicted_probability": 0.36376623376623374,
+    "observed_positive_rate": 0.35064935064935066,
+    "bin_sample_counts_available": true,
+    "interpretation_note_vi": "Đường hiệu chuẩn chỉ cho biết mức độ khớp giữa xác suất dự đoán và tần suất thực tế trên tập kiểm thử này. Nó KHÔNG chứng minh giá trị lâm sàng."
+  },
+  "error_analysis": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 154,
+    "positive_label": 1,
+    "negative_label": 0,
+    "threshold": 0.35,
+    "false_positive_count": 25,
+    "false_negative_count": 8,
+    "true_positive_count": 46,
+    "true_negative_count": 75,
+    "actual_positive_count": 54,
+    "actual_negative_count": 100,
+    "false_positive_rate": 0.25,
+    "false_negative_rate": 0.14814814814814814,
+    "false_positive_share_of_all": 0.16233766233766234,
+    "false_negative_share_of_all": 0.05194805194805195,
+    "group_probability_summary": {
+      "true_negative_mean_probability": 0.09080000000000002,
+      "false_positive_mean_probability": 0.5972,
+      "false_negative_mean_probability": 0.185,
+      "true_positive_mean_probability": 0.7130434782608696
+    },
+    "dropped_identifier_columns": [],
+    "labels_vi": {
+      "false_positive": "Dương tính giả (False Positives)",
+      "false_negative": "Âm tính giả / Bỏ sót ca có nguy cơ (False Negatives / Missed Positive-Risk Cases)"
+    },
+    "screening_note_vi": "Các ca âm tính giả là những dòng thực tế thuộc nhóm nguy cơ nhưng mô hình không báo nguy cơ trên tập kiểm thử. Con số này mô tả hành vi của mô hình trên dữ liệu kiểm thử; repository không có bằng chứng về hậu quả lâm sàng thực tế, và đây không phải công cụ chẩn đoán."
+  },
+  "decision_engine_view": {
+    "status": "ok",
+    "available": true,
+    "n_samples": 154,
+    "cutoffs": {
+      "low_below": 0.3,
+      "high_at_or_above": 0.7,
+      "source": "src/decision_engine/decision_engine.py"
+    },
+    "distribution": {
+      "LOW": 79,
+      "MODERATE": 40,
+      "HIGH": 35,
+      "UNKNOWN": 0
+    },
+    "distribution_share": {
+      "LOW": 0.512987012987013,
+      "MODERATE": 0.2597402597402597,
+      "HIGH": 0.22727272727272727,
+      "UNKNOWN": 0.0
+    },
+    "high_prediction_rate": 0.22727272727272727,
+    "high_as_positive_metrics": {
+      "status": "ok",
+      "available": true,
+      "n_samples": 154,
+      "positive_label": 1,
+      "negative_label": 0,
+      "threshold": 0.7,
+      "accuracy": 0.7597402597402597,
+      "macro_f1": 0.7076599456159253,
+      "positive_precision": 0.7428571428571429,
+      "positive_recall": 0.48148148148148145,
+      "positive_f1": 0.5842696629213483,
+      "per_class": {
+        "class_0": {
+          "label": 0,
+          "role": "negative",
+          "meaning": "negative class",
+          "precision": 0.7647058823529411,
+          "recall": 0.91,
+          "f1": 0.8310502283105022,
+          "support": 100
+        },
+        "class_1": {
+          "label": 1,
+          "role": "positive",
+          "meaning": "positive / risk class",
+          "precision": 0.7428571428571429,
+          "recall": 0.48148148148148145,
+          "f1": 0.5842696629213483,
+          "support": 54
+        }
+      },
+      "confusion_matrix": {
+        "labels": [
+          0,
+          1
+        ],
+        "matrix": [
+          [
+            91,
+            9
+          ],
+          [
+            28,
+            26
+          ]
+        ],
+        "row_semantics": "rows = actual class, columns = predicted class"
+      },
+      "counts": {
+        "true_negative": 91,
+        "false_positive": 9,
+        "false_negative": 28,
+        "true_positive": 26
+      },
+      "rates": {
+        "false_positive_rate": 0.09,
+        "false_negative_rate": 0.5185185185185185,
+        "true_positive_rate": 0.48148148148148145,
+        "true_negative_rate": 0.91,
+        "positive_prediction_rate": 0.22727272727272727,
+        "prevalence": 0.35064935064935066
+      }
+    },
+    "model_threshold_vs_high_risk_level": {
+      "model_positive_count": 71,
+      "high_risk_level_count": 35,
+      "rows_where_the_two_rules_disagree": 36,
+      "disagreement_share": 0.23376623376623376
+    },
+    "note_vi": "Decision Engine dùng mốc 0.30 / 0.70 để phân mức nguy cơ, khác với ngưỡng mô hình lấy từ data/models/*_threshold.pkl. Hai cách nhìn được báo cáo song song; logic của ứng dụng KHÔNG bị thay đổi."
+  },
+  "dataset_limitations": {
+    "disease": "diabetes",
+    "display_name_vi": "Đái tháo đường",
+    "target_column": "Outcome",
+    "positive_class": 1,
+    "negative_class": 0,
+    "positive_meaning_vi": "Có nguy cơ / dấu hiệu đái tháo đường",
+    "negative_meaning_vi": "Không thuộc nhóm nguy cơ đái tháo đường",
+    "source_file": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\raw\\diabetes.csv",
+    "source_columns": [
+      "Pregnancies",
+      "Glucose",
+      "BloodPressure",
+      "SkinThickness",
+      "Insulin",
+      "BMI",
+      "DiabetesPedigreeFunction",
+      "Age",
+      "Outcome"
+    ],
+    "dataset_source_vi": "Bộ dữ liệu thô trong repository: diabetes.csv (768 dòng, 9 cột).",
+    "dataset_provenance": {
+      "status": "NOT FOUND / NEEDS VERIFICATION",
+      "detail_vi": "Repository không có tài liệu về nguồn gốc, đơn vị thu thập, phương pháp lấy mẫu, thời điểm thu thập hay giấy phép của bộ dữ liệu. Không thể xác minh từ mã nguồn => NOT FOUND / NEEDS VERIFICATION."
+    },
+    "sample_size": {
+      "raw_rows": 768,
+      "raw_columns": 9,
+      "duplicate_rows": 0,
+      "train_rows": 614,
+      "test_rows": 154,
+      "feature_count": 8
+    },
+    "class_distribution": {
+      "raw_counts": {
+        "0": 500,
+        "1": 268
+      },
+      "raw_share": {
+        "0": 0.6510416666666666,
+        "1": 0.3489583333333333
+      },
+      "test_counts": {
+        "0": 100,
+        "1": 54
+      },
+      "test_share": {
+        "0": 0.6493506493506493,
+        "1": 0.35064935064935066
+      }
+    },
+    "missing_values": {
+      "raw_total_missing": 0,
+      "raw_missing_by_column": {},
+      "processed_test_missing": 0
+    },
+    "zero_value_counts": {},
+    "preprocessing_steps_vi": "Giá trị Insulin 102.5 và 169.5 được coi là bất thường và đổi thành NaN, điền khuyết bằng SimpleImputer(strategy='median') fit trên tập train, chia train/test 80/20 (random_state=42, stratify), chuẩn hoá StandardScaler fit trên tập train.",
+    "transformer_vi": "SimpleImputer(median) (diabetes_imputer.pkl) + StandardScaler (diabetes_scaler.pkl).",
+    "dataset_source_used_for_evaluation": "diabetes.csv (held-out 20% split) -> live pipeline; verified against C:\\AI\\AI_HealthCareAssitant-dev\\data\\processed\\diabetes_X_test.csv",
+    "verification": {
+      "mode": "raw held-out rows -> validate_input -> apply_transformers (live pipeline)",
+      "verified": true,
+      "max_abs_diff_vs_processed": 4.440892098500626e-16,
+      "y_test_reproduced": true,
+      "non_missing_comparison": null,
+      "split": {
+        "test_size": 0.2,
+        "random_state": 42,
+        "stratify": true
+      },
+      "live_pipeline": "prediction_layer.validate_input + prediction_layer.apply_transformers"
+    },
+    "demographic_coverage": {
+      "Age": {
+        "available": true,
+        "type": "continuous",
+        "n_unique": 40,
+        "min": 21.0,
+        "median": 28.0,
+        "max": 68.0
+      }
+    },
+    "demographics_absent": [
+      "gender",
+      "male",
+      "sex",
+      "race",
+      "ethnicity",
+      "income",
+      "region",
+      "education"
+    ],
+    "representation_limitations_vi": [
+      "Các trường nhân khẩu học KHÔNG có trong bộ dữ liệu này: gender, male, sex, race, ethnicity, income, region, education => không thể đánh giá mức độ đại diện hay công bằng theo các nhóm đó.",
+      "Không có trường dân tộc, thu nhập, khu vực sinh sống hay trình độ học vấn trong bất kỳ bộ dữ liệu nào của repository.",
+      "Không có thông tin về phương pháp lấy mẫu nên không thể khẳng định mẫu đại diện cho dân số mục tiêu.",
+      "Bộ dữ liệu này không có biến giới tính (xác minh từ danh sách cột)."
+    ],
+    "external_validation": {
+      "exists": false,
+      "statement_vi": "KHÔNG có tập kiểm chứng độc lập/bên ngoài trong repository. Toàn bộ chỉ số được tính trên 20% dữ liệu giữ lại của CHÍNH bộ dữ liệu đã dùng để huấn luyện (test_size=0.20, random_state=42, stratify=y).",
+      "how_verified": "Đã rà soát data/ (raw, processed) và mã nguồn src/; không tồn tại tệp dữ liệu kiểm chứng độc lập nào."
+    },
+    "label_limitations_vi": [
+      "Repository không có data dictionary hay tài liệu định nghĩa nhãn => định nghĩa nhãn: NOT FOUND / NEEDS VERIFICATION.",
+      "Nhãn dùng để đánh giá là cột 'Outcome', lớp dương = 1 (Có nguy cơ / dấu hiệu đái tháo đường). Ý nghĩa này suy ra từ mã nguồn hiện có, không phải từ tài liệu dữ liệu."
+    ],
+    "known_limitations_vi": [
+      "Tập kiểm thử chỉ là 20% dữ liệu giữ lại của cùng một bộ dữ liệu, không phải tập kiểm chứng độc lập.",
+      "Hiệu năng trên tập kiểm thử KHÔNG đại diện cho hiệu năng thực tế ngoài dân số của bộ dữ liệu này.",
+      "Không xác minh được nguồn gốc/giấy phép dữ liệu nên không thể khẳng định tính phù hợp cho mục đích lâm sàng.",
+      "Dữ liệu thiếu và các giá trị 0 bất thường có thể làm sai lệch chỉ số.",
+      "Nhãn có thể chứa sai số; định nghĩa nhãn không được tài liệu hóa.",
+      "Thiếu nhiều trường nhân khẩu học nên không thể đánh giá đầy đủ tính đại diện và công bằng giữa các nhóm."
+    ],
+    "split_note_vi": "Tập đánh giá là 20% dữ liệu giữ lại (test_size=0.20, random_state=42, stratify=y). Đây là hold-out nội bộ, không phải kiểm chứng độc lập.",
+    "evaluation_disclaimer_vi": "Các chỉ số dưới đây mô tả hành vi của mô hình trên tập dữ liệu kiểm thử đã được giữ lại. Chúng KHÔNG chứng minh giá trị lâm sàng hay độ chính xác chẩn đoán. Hệ thống được thiết kế cho mục đích sàng lọc/hỗ trợ nguy cơ, không phải chẩn đoán y khoa và không thay thế nhân viên y tế có chuyên môn.",
+    "screening_disclaimer_reference_vi": "Cảnh báo chung của ứng dụng vẫn giữ nguyên và được hiển thị ở màn hình đánh giá nguy cơ (nguồn: src/recommendation/recommendation_engine.py, khóa 'disclaimer')."
+  },
+  "metric_family_note_vi": "AUROC, Brier và đường hiệu chuẩn dùng XÁC SUẤT dự đoán. Accuracy, Precision, Recall, F1 và ma trận nhầm lẫn dùng NGƯỠNG mô hình lấy từ *_threshold.pkl.",
+  "evaluation_disclaimer_vi": "Các chỉ số dưới đây mô tả hành vi của mô hình trên tập dữ liệu kiểm thử đã được giữ lại. Chúng KHÔNG chứng minh giá trị lâm sàng hay độ chính xác chẩn đoán. Hệ thống được thiết kế cho mục đích sàng lọc/hỗ trợ nguy cơ, không phải chẩn đoán y khoa và không thay thế nhân viên y tế có chuyên môn.",
+  "screening_disclaimer_reference_vi": "Cảnh báo chung của ứng dụng vẫn giữ nguyên và được hiển thị ở màn hình đánh giá nguy cơ (nguồn: src/recommendation/recommendation_engine.py, khóa 'disclaimer').",
+  "records_note_vi": "Bảng lỗi hiển thị giá trị đặc trưng theo đơn vị của tập đánh giá và chỉ dùng chỉ số dòng (evaluation_row_index); không có cột định danh.",
+  "generated_at": "2026-09-19T08:02:53+00:00",
+  "artifacts_written": {
+    "confusion_matrix_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_confusion_matrix.csv",
+    "per_class_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_per_class_metrics.csv",
+    "calibration_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_calibration.csv",
+    "roc_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_roc.csv",
+    "false_positives_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_false_positives.csv",
+    "false_negatives_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_false_negatives.csv",
+    "plot_reliability": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\diabetes_reliability.png",
+    "plot_roc": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\diabetes_roc.png",
+    "plot_confusion_matrix": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\diabetes_confusion_matrix.png",
+    "metrics_json": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\diabetes_metrics.json"
+  }
+}

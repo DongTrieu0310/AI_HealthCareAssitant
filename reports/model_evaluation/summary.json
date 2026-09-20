@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-09-19T08:02:54+00:00",
+  "reports_dir": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation",
+  "evaluated_diseases": [
+    "cardiovascular",
+    "diabetes",
+    "hypertension"
+  ],
+  "failed_diseases": {},
+  "models": {
+    "cardiovascular": {
+      "model_file": "cardio_random_forest.pkl",
+      "model_type": "RandomForestClassifier",
+      "threshold": 0.4,
+      "threshold_source": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\cardio_threshold.pkl",
+      "n_samples": 14000,
+      "positive_class": 1,
+      "target_column": "cardio"
+    },
+    "diabetes": {
+      "model_file": "diabetes_random_forest.pkl",
+      "model_type": "RandomForestClassifier",
+      "threshold": 0.35,
+      "threshold_source": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\diabetes_threshold.pkl",
+      "n_samples": 154,
+      "positive_class": 1,
+      "target_column": "Outcome"
+    },
+    "hypertension": {
+      "model_file": "hypertension_random_forest.pkl",
+      "model_type": "RandomForestClassifier",
+      "threshold": 0.35,
+      "threshold_source": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\hypertension_threshold.pkl",
+      "n_samples": 848,
+      "positive_class": 1,
+      "target_column": "Risk"
+    }
+  },
+  "headline_metrics": {
+    "cardiovascular": {
+      "accuracy": 0.7218571428571429,
+      "macro_f1": 0.7207131840590487,
+      "auroc": 0.7986642505842451,
+      "positive_precision": 0.6963291139240506,
+      "positive_recall": 0.7863064608347627,
+      "positive_f1": 0.7385875402792696,
+      "brier_score": 0.18181651909488372,
+      "false_positive_count": 2399,
+      "false_negative_count": 1495
+    },
+    "diabetes": {
+      "accuracy": 0.7857142857142857,
+      "macro_f1": 0.7778360655737705,
+      "auroc": 0.8752777777777777,
+      "positive_precision": 0.647887323943662,
+      "positive_recall": 0.8518518518518519,
+      "positive_f1": 0.736,
+      "brier_score": 0.13565194805194805,
+      "false_positive_count": 25,
+      "false_negative_count": 8
+    },
+    "hypertension": {
+      "accuracy": 0.8997641509433962,
+      "macro_f1": 0.8877913991048842,
+      "auroc": 0.9534821747749505,
+      "positive_precision": 0.788961038961039,
+      "positive_recall": 0.9239543726235742,
+      "positive_f1": 0.851138353765324,
+      "brier_score": 0.07680901247552933,
+      "false_positive_count": 65,
+      "false_negative_count": 20
+    }
+  },
+  "status_notes": {
+    "cardiovascular": {
+      "auroc_status": "ok",
+      "brier_score_status": "ok",
+      "calibration_status": "ok",
+      "classification_status": "ok"
+    },
+    "diabetes": {
+      "auroc_status": "ok",
+      "brier_score_status": "ok",
+      "calibration_status": "ok",
+      "classification_status": "ok"
+    },
+    "hypertension": {
+      "auroc_status": "ok",
+      "brier_score_status": "ok",
+      "calibration_status": "ok",
+      "classification_status": "ok"
+    }
+  },
+  "no_retraining": true,
+  "no_model_artifacts_modified": true,
+  "evaluation_disclaimer_vi": "Các chỉ số dưới đây mô tả hành vi của mô hình trên tập dữ liệu kiểm thử đã được giữ lại. Chúng KHÔNG chứng minh giá trị lâm sàng hay độ chính xác chẩn đoán. Hệ thống được thiết kế cho mục đích sàng lọc/hỗ trợ nguy cơ, không phải chẩn đoán y khoa và không thay thế nhân viên y tế có chuyên môn.",
+  "screening_disclaimer_reference_vi": "Cảnh báo chung của ứng dụng vẫn giữ nguyên và được hiển thị ở màn hình đánh giá nguy cơ (nguồn: src/recommendation/recommendation_engine.py, khóa 'disclaimer')."
+}
