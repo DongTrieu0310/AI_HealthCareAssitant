@@ -1,12 +1,12 @@
 {
   "model": "RandomForestClassifier",
   "model_file": "cardio_random_forest.pkl",
-  "model_path": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\cardio_random_forest.pkl",
+  "model_path": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/data/models/cardio_random_forest.pkl",
   "n_estimators": 200,
   "disease": "cardiovascular",
   "display_name_vi": "Tim mạch",
   "display_name_en": "Cardiovascular",
-  "dataset": "cardio.csv (held-out 20% split) -> live pipeline; verified against C:\\AI\\AI_HealthCareAssitant-dev\\data\\processed\\cardio_X_test.csv",
+  "dataset": "cardio.csv (held-out 20% split) -> live pipeline; verified against /Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/data/processed/cardio_X_test.csv",
   "n_samples": 14000,
   "n_features": 11,
   "features": [
@@ -29,7 +29,7 @@
   "negative_class_meaning_vi": "Không thuộc nhóm nguy cơ tim mạch",
   "positive_class_evidence": "prediction_layer.predict_disease() uses predict_proba(X)[0, 1] and prediction = int(probability >= threshold); existing evaluation scripts label class 1 as the disease class (cardio_evalution.py, diabetes_evaluation.py, hypertension_evaluasion.py).",
   "threshold": 0.4,
-  "threshold_source": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\models\\cardio_threshold.pkl",
+  "threshold_source": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/data/models/cardio_threshold.pkl",
   "threshold_note_vi": "Ngưỡng được nạp từ tệp *_threshold.pkl hiện có qua prediction_layer.load_thresholds(); không hardcode và không thay bằng 0.5.",
   "accuracy": 0.7218571428571429,
   "macro_f1": 0.7207131840590487,
@@ -216,9 +216,9 @@
         "bin_lower": 0.2,
         "bin_upper": 0.30000000000000004,
         "sample_count": 2618,
-        "mean_predicted_probability": 0.2489360995835479,
+        "mean_predicted_probability": 0.24893609958354784,
         "observed_positive_frequency": 0.24369747899159663,
-        "absolute_gap": 0.005238620591951265
+        "absolute_gap": 0.00523862059195121
       },
       {
         "bin": 4,
@@ -270,9 +270,9 @@
         "bin_lower": 0.8,
         "bin_upper": 0.9,
         "sample_count": 3257,
-        "mean_predicted_probability": 0.843745938260508,
+        "mean_predicted_probability": 0.8437459382605081,
         "observed_positive_frequency": 0.841879029782008,
-        "absolute_gap": 0.0018669084785000178
+        "absolute_gap": 0.0018669084785001289
       },
       {
         "bin": 10,
@@ -284,7 +284,7 @@
         "absolute_gap": 0.1075276780608424
       }
     ],
-    "expected_calibration_error": 0.009423062554873695,
+    "expected_calibration_error": 0.009423062554873712,
     "mean_predicted_probability": 0.5001634430121917,
     "observed_positive_rate": 0.4997142857142857,
     "bin_sample_counts_available": true,
@@ -422,7 +422,7 @@
     "negative_class": 0,
     "positive_meaning_vi": "Có nguy cơ / dấu hiệu bệnh tim mạch",
     "negative_meaning_vi": "Không thuộc nhóm nguy cơ tim mạch",
-    "source_file": "C:\\AI\\AI_HealthCareAssitant-dev\\data\\raw\\cardio.csv",
+    "source_file": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/data/raw/cardio.csv",
     "source_columns": [
       "id",
       "age",
@@ -477,11 +477,11 @@
     "zero_value_counts": {},
     "preprocessing_steps_vi": "Loại bỏ dòng trùng lặp, đổi tuổi từ ngày sang năm (chia 365.25), chia train/test 80/20 (random_state=42, stratify), chuẩn hoá StandardScaler fit trên tập train.",
     "transformer_vi": "StandardScaler (cardio_scaler.pkl) - bắt buộc khi dự đoán.",
-    "dataset_source_used_for_evaluation": "cardio.csv (held-out 20% split) -> live pipeline; verified against C:\\AI\\AI_HealthCareAssitant-dev\\data\\processed\\cardio_X_test.csv",
+    "dataset_source_used_for_evaluation": "cardio.csv (held-out 20% split) -> live pipeline; verified against /Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/data/processed/cardio_X_test.csv",
     "verification": {
       "mode": "raw held-out rows -> validate_input -> apply_transformers (live pipeline)",
       "verified": true,
-      "max_abs_diff_vs_processed": 8.881784197001252e-16,
+      "max_abs_diff_vs_processed": 4.440892098500626e-16,
       "y_test_reproduced": true,
       "non_missing_comparison": null,
       "split": {
@@ -549,17 +549,14 @@
   "evaluation_disclaimer_vi": "Các chỉ số dưới đây mô tả hành vi của mô hình trên tập dữ liệu kiểm thử đã được giữ lại. Chúng KHÔNG chứng minh giá trị lâm sàng hay độ chính xác chẩn đoán. Hệ thống được thiết kế cho mục đích sàng lọc/hỗ trợ nguy cơ, không phải chẩn đoán y khoa và không thay thế nhân viên y tế có chuyên môn.",
   "screening_disclaimer_reference_vi": "Cảnh báo chung của ứng dụng vẫn giữ nguyên và được hiển thị ở màn hình đánh giá nguy cơ (nguồn: src/recommendation/recommendation_engine.py, khóa 'disclaimer').",
   "records_note_vi": "Bảng lỗi hiển thị giá trị đặc trưng theo đơn vị của tập đánh giá và chỉ dùng chỉ số dòng (evaluation_row_index); không có cột định danh.",
-  "generated_at": "2026-09-19T08:02:52+00:00",
+  "generated_at": "2026-09-27T12:24:55+00:00",
   "artifacts_written": {
-    "confusion_matrix_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_confusion_matrix.csv",
-    "per_class_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_per_class_metrics.csv",
-    "calibration_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_calibration.csv",
-    "roc_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_roc.csv",
-    "false_positives_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_false_positives.csv",
-    "false_negatives_csv": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_false_negatives.csv",
-    "plot_reliability": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\cardiovascular_reliability.png",
-    "plot_roc": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\cardiovascular_roc.png",
-    "plot_confusion_matrix": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\plots\\cardiovascular_confusion_matrix.png",
-    "metrics_json": "C:\\AI\\AI_HealthCareAssitant-dev\\reports\\model_evaluation\\cardiovascular_metrics.json"
+    "confusion_matrix_csv": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_confusion_matrix.csv",
+    "per_class_csv": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_per_class_metrics.csv",
+    "calibration_csv": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_calibration.csv",
+    "roc_csv": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_roc.csv",
+    "false_positives_csv": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_false_positives.csv",
+    "false_negatives_csv": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_false_negatives.csv",
+    "metrics_json": "/Users/I756422/Projects/uit-projects/AI_HealthCareAssitant/reports/model_evaluation/cardiovascular_metrics.json"
   }
 }

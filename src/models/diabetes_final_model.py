@@ -3,6 +3,8 @@ import joblib
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score
 
 
 print("=" * 60)
@@ -66,9 +68,15 @@ print("y_train:", y_train.shape)
 # ============================================================
 # 4. FINAL RANDOM FOREST
 # ============================================================
+# Sử dụng bộ siêu tham số tốt nhất tìm được từ GridSearchCV
+# (xem diabetes_tuning.py), thay cho cấu hình mặc định.
 
 model = RandomForestClassifier(
-    n_estimators=100,
+    n_estimators=300,
+    max_depth=10,
+    max_features="log2",
+    min_samples_leaf=4,
+    min_samples_split=10,
     random_state=42
 )
 
@@ -83,10 +91,44 @@ print("\nFinal Random Forest trained successfully.")
 # ============================================================
 # 5. FINAL THRESHOLD
 # ============================================================
+# Chọn ngưỡng bằng cách quét trên tập validation (tách từ train),
+# lấy ngưỡng cho F1 cao nhất — thay cho việc gán cứng.
 
-threshold = 0.35
+X_fit, X_val, y_fit, y_val = train_test_split(
+    X_train,
+    y_train,
+    test_size=0.20,
+    random_state=42,
+    stratify=y_train
+)
 
-print(f"\nFinal threshold: {threshold}")
+threshold_model = RandomForestClassifier(
+    n_estimators=300,
+    max_depth=10,
+    max_features="log2",
+    min_samples_leaf=4,
+    min_samples_split=10,
+    random_state=42
+)
+threshold_model.fit(X_fit, y_fit)
+
+val_prob = threshold_model.predict_proba(X_val)[:, 1]
+
+candidate_thresholds = [0.30, 0.35, 0.40, 0.45, 0.50]
+best_threshold = 0.50
+best_f1 = -1.0
+
+for t in candidate_thresholds:
+    val_pred = (val_prob >= t).astype(int)
+    f1 = f1_score(y_val, val_pred, zero_division=0)
+    print(f"threshold={t:.2f} -> F1={f1:.4f}")
+    if f1 > best_f1:
+        best_f1 = f1
+        best_threshold = t
+
+threshold = float(best_threshold)
+
+print(f"\nFinal threshold (chọn theo F1 trên validation): {threshold}")
 
 
 # ============================================================
