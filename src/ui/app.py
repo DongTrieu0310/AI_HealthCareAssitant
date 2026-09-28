@@ -58,7 +58,7 @@ SHOW_DEFENSE_QA = False
 # Đặt True để hiện bảng Đánh giá mô hình / Trustworthy AI.
 # Bảng này chỉ đọc artifact đã lưu trong reports/model_evaluation/.
 # Tab hiển thị trong UI chính: "Model Evaluation Dashboard".
-SHOW_MODEL_EVALUATION = True
+SHOW_MODEL_EVALUATION = False
 
 
 # Ba bệnh hệ thống đánh giá: khoá bên Prediction ↔ khoá bên Decision.
@@ -800,8 +800,7 @@ def render_records_tab(selected_patient):
 
 theme.hero(
     "🩺 Trợ lý Sức khỏe AI",
-    "Sàng lọc nguy cơ tim mạch, đái tháo đường và tăng huyết áp — "
-    "hỗ trợ quyết định, không thay thế chẩn đoán."
+    ""
 )
 
 selected_patient = render_sidebar()
